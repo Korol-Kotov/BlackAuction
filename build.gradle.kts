@@ -9,6 +9,7 @@ version = "1.0"
 repositories {
     mavenCentral()
     maven("https://maven.leafmc.one/snapshots/")
+    maven("https://jitpack.io")
 }
 
 dependencies {
@@ -19,6 +20,8 @@ dependencies {
     implementation("mysql:mysql-connector-java:8.0.33")
     implementation("com.zaxxer:HikariCP:6.2.1")
     implementation("org.flywaydb:flyway-core:9.22.3")
+
+    compileOnly("com.github.MilkBowl:VaultAPI:1.7")
 }
 
 java {

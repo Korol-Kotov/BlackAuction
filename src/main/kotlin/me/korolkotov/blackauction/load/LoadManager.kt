@@ -4,6 +4,7 @@ import me.korolkotov.blackauction.config.ConfigManager
 import me.korolkotov.blackauction.coroutine.DatabaseDispatcher
 import me.korolkotov.blackauction.coroutine.PluginCoroutineScope
 import me.korolkotov.blackauction.database.DatabaseManager
+import me.korolkotov.blackauction.economy.EconomyManager
 import me.korolkotov.blackauction.util.MessageService
 
 class LoadManager {
@@ -18,6 +19,7 @@ class LoadManager {
     init {
         loadManagerInterfaces.add(ConfigManager())
         loadManagerInterfaces.add(DatabaseManager())
+        loadManagerInterfaces.add(EconomyManager())
     }
 
     fun initialize() = loadManagerInterfaces.forEach { it.initialize() }

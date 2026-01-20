@@ -3,3 +3,5 @@ version: '1.0'
 main: me.korolkotov.blackauction.Main
 api-version: '1.21'
 author: KoroLKotov
+
+softdepend: [Vault]
