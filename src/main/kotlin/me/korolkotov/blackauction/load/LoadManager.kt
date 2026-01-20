@@ -1,5 +1,6 @@
 package me.korolkotov.blackauction.load
 
+import me.korolkotov.blackauction.command.CommandManager
 import me.korolkotov.blackauction.config.ConfigManager
 import me.korolkotov.blackauction.coroutine.DatabaseDispatcher
 import me.korolkotov.blackauction.coroutine.PluginCoroutineScope
@@ -20,6 +21,7 @@ class LoadManager {
         loadManagerInterfaces.add(ConfigManager())
         loadManagerInterfaces.add(DatabaseManager())
         loadManagerInterfaces.add(EconomyManager())
+        loadManagerInterfaces.add(CommandManager())
     }
 
     fun initialize() = loadManagerInterfaces.forEach { it.initialize() }
@@ -30,8 +32,5 @@ class LoadManager {
         DatabaseDispatcher.IO.close()
     }
 
-    fun reload() {
-        loadManagerInterfaces.reversed().forEach { it.reload() }
-        MessageService.reloadMessages()
-    }
+    fun reload() = loadManagerInterfaces.reversed().forEach { it.reload() }
 }

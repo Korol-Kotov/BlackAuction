@@ -5,3 +5,8 @@ api-version: '1.21'
 author: KoroLKotov
 
 softdepend: [Vault]
+
+commands:
+  blackauction:
+    aliases: [ba]
+    description: 'Основная команда плагина BlackAuction.'
