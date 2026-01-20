@@ -13,21 +13,21 @@ class ConfigManager : LoadManagerInterface<ConfigManager> {
 
     private val dataFolder get() = Main.instance.dataFolder
 
-    lateinit var config: YamlConfiguration
+    lateinit var databaseConfig: DatabaseConfig
 
     init {
         instance = this
     }
 
-    override fun getInstance(): ConfigManager = this
+    override fun getInstance() = this
 
     override fun initialize() {
-        config = loadOrCreate("config.yml")
+        val database = loadOrCreate("database.yml")
+        databaseConfig = DatabaseConfig(database)
     }
 
     override fun reload() {
-        config.load(File(dataFolder, "config.yml"))
-        MessageService.reloadMessages()
+        initialize()
     }
 
     private fun loadOrCreate(fileName: String, fill: Boolean = true): YamlConfiguration {

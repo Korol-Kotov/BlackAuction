@@ -14,6 +14,11 @@ repositories {
 dependencies {
     compileOnly("cn.dreeam.leaf:leaf-api:1.21.4-R0.1-SNAPSHOT")
     implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8")
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.10.2")
+
+    implementation("mysql:mysql-connector-java:8.0.33")
+    implementation("com.zaxxer:HikariCP:6.2.1")
+    implementation("org.flywaydb:flyway-core:9.22.3")
 }
 
 java {
