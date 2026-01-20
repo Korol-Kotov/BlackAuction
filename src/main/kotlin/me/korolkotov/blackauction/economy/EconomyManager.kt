@@ -1,6 +1,8 @@
 package me.korolkotov.blackauction.economy
 
+import me.korolkotov.blackauction.Main
 import me.korolkotov.blackauction.load.LoadManagerInterface
+import me.korolkotov.blackauction.logger.Logger
 import net.milkbowl.vault.economy.Economy
 import org.bukkit.Bukkit
 import org.bukkit.OfflinePlayer
@@ -19,9 +21,12 @@ class EconomyManager : LoadManagerInterface<EconomyManager> {
     override fun getInstance() = this
 
     override fun initialize() {
-        val rsp = Bukkit.getServicesManager()
-            .getRegistration(Economy::class.java)
-            ?: error("Vault economy provider not found")
+        val rsp = Bukkit.getServicesManager().getRegistration(Economy::class.java)
+        if (rsp == null) {
+            Logger.instance.error("Vault dependency wasn't found, disabling plugin.")
+            Bukkit.getPluginManager().disablePlugin(Main.instance)
+            return
+        }
 
         economy = rsp.provider
     }

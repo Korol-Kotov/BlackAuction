@@ -10,7 +10,7 @@ class ConfigManager : LoadManagerInterface<ConfigManager> {
         lateinit var instance: ConfigManager private set
     }
 
-    private val dataFolder get() = Main.instance.dataFolder
+    val dataFolder get() = Main.instance.dataFolder
 
     lateinit var config: GeneralConfig
     lateinit var databaseConfig: DatabaseConfig

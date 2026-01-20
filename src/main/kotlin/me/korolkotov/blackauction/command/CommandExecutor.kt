@@ -2,6 +2,7 @@ package me.korolkotov.blackauction.command
 
 import me.korolkotov.blackauction.annotations.SubCommand
 import me.korolkotov.blackauction.config.ConfigManager
+import me.korolkotov.blackauction.logger.Logger
 import me.korolkotov.blackauction.util.MessageService
 import org.bukkit.Bukkit
 import org.bukkit.Material
@@ -39,6 +40,8 @@ abstract class CommandExecutor : TabExecutor {
             if (wrapper.getCommand().subCommands.isNotEmpty()) index++
 
             val result = runCommand(sender, wrapper, label, args.copyOfRange(index, args.size))
+            Logger.instance.debug("${sender.name} ran command ${wrapper.getCommand().commands.first()} with result ${result.name}.")
+
             when (result) {
                 CommandResult.NO_PERMISSIONS -> {
                     MessageService.sendMessage(sender, ConfigManager.instance.messageConfig.errorsConfig.notEnoughPerms)
@@ -125,7 +128,11 @@ abstract class CommandExecutor : TabExecutor {
 
             return CommandResult.SUCCESS
         }.onFailure { e ->
-            e.printStackTrace()
+            Logger.instance.error(
+                "Произошла ошибка при попытке вызвать команду." +
+                    "\nОтправитель: ${sender.name}; Команда: ${wrapper.getCommand().commands.first()}; Аргументы: ${args.joinToString(", ")}",
+                e
+            )
         }
 
         return CommandResult.COMMAND_ERROR

@@ -4,6 +4,7 @@ import com.zaxxer.hikari.HikariConfig
 import com.zaxxer.hikari.HikariDataSource
 import me.korolkotov.blackauction.config.ConfigManager
 import me.korolkotov.blackauction.load.LoadManagerInterface
+import me.korolkotov.blackauction.logger.Logger
 
 class DatabaseManager : LoadManagerInterface<DatabaseManager> {
     lateinit var dataSource: HikariDataSource
@@ -11,34 +12,35 @@ class DatabaseManager : LoadManagerInterface<DatabaseManager> {
     override fun getInstance() = this
 
     override fun initialize() {
-        val config = ConfigManager.instance.databaseConfig
-
+        val mysql = ConfigManager.instance.databaseConfig.mysql
         val hikari = HikariConfig().apply {
             jdbcUrl =
-                "jdbc:mysql://${config.mysql.host}:${config.mysql.port}/${config.mysql.database}" +
-                        "?useSSL=${config.mysql.connectionProperties.useSSL}" +
-                        "&autoReconnect=${config.mysql.connectionProperties.autoReconnect}" +
-                        "&characterEncoding=${config.mysql.connectionProperties.characterEncoding}" +
-                        "&cachePrepStmts=${config.mysql.connectionProperties.cachePrepStmts}" +
-                        "&prepStmtCacheSize=${config.mysql.connectionProperties.prepStmtCacheSize}" +
-                        "&prepStmtCacheSqlLimit=${config.mysql.connectionProperties.prepStmtCacheSqlLimit}"
+                "jdbc:mysql://${mysql.host}:${mysql.port}/${mysql.database}" +
+                        "?useSSL=${mysql.connectionProperties.useSSL}" +
+                        "&autoReconnect=${mysql.connectionProperties.autoReconnect}" +
+                        "&characterEncoding=${mysql.connectionProperties.characterEncoding}" +
+                        "&cachePrepStmts=${mysql.connectionProperties.cachePrepStmts}" +
+                        "&prepStmtCacheSize=${mysql.connectionProperties.prepStmtCacheSize}" +
+                        "&prepStmtCacheSqlLimit=${mysql.connectionProperties.prepStmtCacheSqlLimit}"
 
-            username = config.mysql.user
-            password = config.mysql.password
+            username = mysql.user
+            password = mysql.password
 
-            maximumPoolSize = config.mysql.pool.poolSize
-            minimumIdle = config.mysql.pool.minimumIdle
+            maximumPoolSize = mysql.pool.poolSize
+            minimumIdle = mysql.pool.minimumIdle
 
-            idleTimeout = config.mysql.pool.idleTimeout
-            connectionTimeout = config.mysql.pool.connectionTimeout
-            maxLifetime = config.mysql.pool.maxLifetime
+            idleTimeout = mysql.pool.idleTimeout
+            connectionTimeout = mysql.pool.connectionTimeout
+            maxLifetime = mysql.pool.maxLifetime
 
             driverClassName = "com.mysql.cj.jdbc.Driver"
         }
 
         dataSource = HikariDataSource(hikari)
+        Logger.instance.debug("Data source has been initialized.")
 
         MigrationService(dataSource).migrate()
+        Logger.instance.debug("Database has been migrated.")
     }
 
     override fun terminate() {
