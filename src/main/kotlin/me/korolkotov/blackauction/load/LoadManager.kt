@@ -7,6 +7,7 @@ import me.korolkotov.blackauction.coroutine.PluginCoroutineScope
 import me.korolkotov.blackauction.database.DatabaseManager
 import me.korolkotov.blackauction.economy.EconomyManager
 import me.korolkotov.blackauction.logger.LoggerManager
+import me.korolkotov.blackauction.menu.MenuManager
 import me.korolkotov.blackauction.util.MessageService
 
 class LoadManager {
@@ -24,6 +25,7 @@ class LoadManager {
         loadManagerInterfaces.add(DatabaseManager())
         loadManagerInterfaces.add(EconomyManager())
         loadManagerInterfaces.add(AuctionManager())
+        loadManagerInterfaces.add(MenuManager())
         loadManagerInterfaces.add(CommandManager())
     }
 

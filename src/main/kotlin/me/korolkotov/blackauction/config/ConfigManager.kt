@@ -15,6 +15,7 @@ class ConfigManager : LoadManagerInterface<ConfigManager> {
     lateinit var config: GeneralConfig
     lateinit var databaseConfig: DatabaseConfig
     lateinit var messageConfig: MessageConfig
+    lateinit var menuConfig: MenuConfig
 
     init {
         instance = this
@@ -31,6 +32,9 @@ class ConfigManager : LoadManagerInterface<ConfigManager> {
 
         val languageFile = loadLanguageFile(this.config.plugin.language)
         messageConfig = MessageConfig(languageFile.getConfigurationSection("messages")!!)
+
+        val menu = loadOrCreate("menu.yml")
+        menuConfig = MenuConfig(menu)
     }
 
     override fun reload() {
