@@ -1,3 +1,15 @@
 plugin: # основные настройки плагина
   language: ru # язык сообщений (папка messages)
   debug: false
+
+auction:
+  general:
+    max-lots: 6
+    date-format: "dd.MM.yyyy HH:mm"
+    time-format: "mm:ss"
+  bidding:
+    default-start-price: 100.0
+    default-bid-step: 50.0
+  notifications:
+    warn-before-start: [300, 60]
+    warn-leader-before-end: [60, 30, 10]

@@ -3,11 +3,30 @@ package me.korolkotov.blackauction.database
 import com.zaxxer.hikari.HikariConfig
 import com.zaxxer.hikari.HikariDataSource
 import me.korolkotov.blackauction.config.ConfigManager
+import me.korolkotov.blackauction.database.dao.BidDao
+import me.korolkotov.blackauction.database.dao.ClaimDao
+import me.korolkotov.blackauction.database.dao.LotDao
+import me.korolkotov.blackauction.database.dao.LotHistoryDao
+import me.korolkotov.blackauction.database.dao.PlayerHistoryDao
+import me.korolkotov.blackauction.database.dao.jdbc.JdbcBidDao
+import me.korolkotov.blackauction.database.dao.jdbc.JdbcClaimDao
+import me.korolkotov.blackauction.database.dao.jdbc.JdbcLotDao
+import me.korolkotov.blackauction.database.dao.jdbc.JdbcLotHistoryDao
+import me.korolkotov.blackauction.database.dao.jdbc.JdbcPlayerHistoryDao
+import me.korolkotov.blackauction.database.repository.AuctionRepository
 import me.korolkotov.blackauction.load.LoadManagerInterface
 import me.korolkotov.blackauction.logger.Logger
 
 class DatabaseManager : LoadManagerInterface<DatabaseManager> {
     lateinit var dataSource: HikariDataSource
+
+    lateinit var bidDao: BidDao
+    lateinit var claimDao: ClaimDao
+    lateinit var lotDao: LotDao
+    lateinit var lotHistoryDao: LotHistoryDao
+    lateinit var playerHistoryDao: PlayerHistoryDao
+
+    lateinit var auctionRepository: AuctionRepository
 
     override fun getInstance() = this
 
@@ -41,6 +60,12 @@ class DatabaseManager : LoadManagerInterface<DatabaseManager> {
 
         MigrationService(dataSource).migrate()
         Logger.instance.debug("Database has been migrated.")
+
+        bidDao = JdbcBidDao(dataSource)
+        claimDao = JdbcClaimDao(dataSource)
+        lotDao = JdbcLotDao(dataSource)
+        lotHistoryDao = JdbcLotHistoryDao(dataSource)
+        playerHistoryDao = JdbcPlayerHistoryDao(dataSource)
     }
 
     override fun terminate() {

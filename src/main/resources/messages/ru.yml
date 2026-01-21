@@ -10,3 +10,11 @@ messages:
     not-enough-args: 'Недостаточно аргументов. Правильное использование: %usage%'
     only-for-player: 'Эта команда доступна только для игроков.'
     something-went-wrong: 'Что-то пошло не так. Обратитесь к администрации.'
+
+  notifications:
+    auction-starting: "Черный аукцион начинается через %time%!"
+    auction-started: "Черный аукцион начался! /blackauction"
+    auction-ending-soon: "Аукцион завершается через %time%!"
+    you-were-outbid: "Вас перебили в лоте %item%! Новая ставка: %amount%"
+    you-won: "Вы выиграли %item% за %price%!"
+    auction-extended: "Аукцион продлен на %seconds% сек.!"

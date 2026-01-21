@@ -10,5 +10,5 @@ interface LotDao {
     fun findById(id: Int): Lot?
     fun updateStatus(id: Int, status: LotStatus)
     fun updateBid(id: Int, bid: Double, leader: UUID?)
-    fun findRunning(now: Instant): List<Lot>
+    fun findActiveOrPlanned(now: Instant): List<Lot>
 }

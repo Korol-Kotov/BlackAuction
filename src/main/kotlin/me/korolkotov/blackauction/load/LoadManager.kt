@@ -3,7 +3,6 @@ package me.korolkotov.blackauction.load
 import me.korolkotov.blackauction.auction.AuctionManager
 import me.korolkotov.blackauction.command.CommandManager
 import me.korolkotov.blackauction.config.ConfigManager
-import me.korolkotov.blackauction.coroutine.DatabaseDispatcher
 import me.korolkotov.blackauction.coroutine.PluginCoroutineScope
 import me.korolkotov.blackauction.database.DatabaseManager
 import me.korolkotov.blackauction.economy.EconomyManager
@@ -33,7 +32,6 @@ class LoadManager {
     fun terminate() {
         loadManagerInterfaces.reversed().forEach { it.terminate() }
         PluginCoroutineScope.shutdown()
-        DatabaseDispatcher.IO.close()
     }
 
     fun reload() = loadManagerInterfaces.reversed().forEach { it.reload() }

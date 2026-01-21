@@ -14,25 +14,26 @@ import javax.sql.DataSource
 class JdbcLotDao(
     private val ds: DataSource
 ) : LotDao {
-
     override fun create(lot: Lot): Int =
         ds.connection.use { con ->
             val sql = """
                 INSERT INTO ba_lots
-                (item_data, start_price, min_bid_step, start_time, end_time, status, created_by, created_at, current_price, current_winner_uuid)
-                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+                (slot, item_data, start_price, min_bid_step, start_time, end_time, status, created_by, created_at, current_price, current_winner_uuid)
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
             """
             con.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS).use { ps ->
-                ps.setString(1, ItemSerializer.serialize(lot.item))
-                ps.setDouble(2, lot.startPrice)
-                ps.setDouble(3, lot.minStep)
-                ps.setInstant(4, lot.startTime)
-                ps.setInstant(5, lot.endTime)
-                ps.setInt(6, lot.status.id)
-                ps.setString(7, lot.createdBy.toString())
-                ps.setInstant(8, lot.createdAt)
-                ps.setDouble(9, lot.currentBid)
-                ps.setString(10, lot.leader?.toString())
+                var index = 1
+                ps.setString(index++, ItemSerializer.serialize(lot.item))
+                ps.setInt(index++, lot.slot)
+                ps.setDouble(index++, lot.startPrice)
+                ps.setDouble(index++, lot.minStep)
+                ps.setInstant(index++, lot.startTime)
+                ps.setInstant(index++, lot.endTime)
+                ps.setInt(index++, lot.status.id)
+                ps.setString(index++, lot.createdBy.toString())
+                ps.setInstant(index++, lot.createdAt)
+                ps.setDouble(index++, lot.currentBid)
+                ps.setString(index, lot.leader?.toString())
                 ps.executeUpdate()
 
                 ps.generatedKeys.use {
@@ -51,6 +52,7 @@ class JdbcLotDao(
 
                     Lot(
                         rs.getInt("id"),
+                        rs.getInt("slot"),
                         ItemSerializer.deserialize(rs.getString("item_data")),
                         rs.getDouble("start_price"),
                         rs.getDouble("min_bid_step"),
@@ -91,10 +93,10 @@ class JdbcLotDao(
         }
     }
 
-    override fun findRunning(now: Instant): List<Lot> =
+    override fun findActiveOrPlanned(now: Instant): List<Lot> =
         ds.connection.use { con ->
             con.prepareStatement(
-                "SELECT * FROM ba_lots WHERE status = 1 AND start_time <= ? AND end_time > ?"
+                "SELECT * FROM ba_lots WHERE status IN (0, 1) AND start_time <= ? AND end_time > ?"
             ).use { ps ->
                 ps.setInstant(1, now)
                 ps.setInstant(2, now)

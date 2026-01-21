@@ -10,6 +10,7 @@ SET time_zone = '+00:00';
 -- -------------------------------
 CREATE TABLE ba_lots (
     id INT AUTO_INCREMENT PRIMARY KEY,
+    slot INT NOT NULL,
     item_data TEXT NOT NULL,
     start_price DECIMAL(18,2) NOT NULL,
     min_bid_step DECIMAL(18,2) NOT NULL,

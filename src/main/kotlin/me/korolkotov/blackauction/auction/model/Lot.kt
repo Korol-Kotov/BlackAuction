@@ -6,6 +6,7 @@ import java.util.UUID
 
 data class Lot(
     val id: Int,
+    val slot: Int,
     val item: ItemStack,
     val startPrice: Double,
     val minStep: Double,
