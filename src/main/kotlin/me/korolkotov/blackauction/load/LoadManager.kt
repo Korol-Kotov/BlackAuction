@@ -1,5 +1,6 @@
 package me.korolkotov.blackauction.load
 
+import me.korolkotov.blackauction.auction.AuctionManager
 import me.korolkotov.blackauction.command.CommandManager
 import me.korolkotov.blackauction.config.ConfigManager
 import me.korolkotov.blackauction.coroutine.DatabaseDispatcher
@@ -23,6 +24,7 @@ class LoadManager {
         loadManagerInterfaces.add(LoggerManager())
         loadManagerInterfaces.add(DatabaseManager())
         loadManagerInterfaces.add(EconomyManager())
+        loadManagerInterfaces.add(AuctionManager())
         loadManagerInterfaces.add(CommandManager())
     }
 
