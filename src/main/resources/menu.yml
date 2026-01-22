@@ -1,5 +1,5 @@
 main-menu:
-  title: '§6§lЧерный Аукцион'
+  title: '&6&lЧерный Аукцион'
   size: 54
 
   items:
@@ -9,7 +9,7 @@ main-menu:
       display-name: " "
     inactive-lot:
       material: "GRAY_STAINED_GLASS_PANE"
-      display-name: "§7§lНеактивный лот"
+      display-name: "&7&lНеактивный лот"
     lot:
       slots: [10, 13, 16, 28, 31, 34]
       lore:
@@ -22,26 +22,26 @@ main-menu:
     claims:
       slots: [43]
       material: "CHEST"
-      display-name: "§e§lМои предметы"
+      display-name: "&e&lМои предметы"
       lore:
-        - "§7Получите выигранные"
-        - "§7предметы из буфера"
+        - "&7Получите выигранные"
+        - "&7предметы из буфера"
       menu: "claims-menu"
     history:
       slots: [45]
       material: "BOOK"
-      display-name: "§e§lМоя история"
+      display-name: "&e&lМоя история"
       lore:
-        - "§7Просмотр всех"
-        - "§7выигранных аукционов"
+        - "&7Просмотр всех"
+        - "&7выигранных аукционов"
       menu: "my-history-menu"
     close:
       slots: [53]
       material: "BARRIER"
-      display-name: "§c§lЗакрыть"
+      display-name: "&c&lЗакрыть"
 
 lot-menu:
-  title: '§6§lАукцион: %item_name%'
+  title: '&6&lАукцион: %item_name%'
   size: 27
 
   items:
@@ -50,42 +50,42 @@ lot-menu:
     info:
       slots: [10]
       material: "PAPER"
-      display-name: '§e§lИнформация'
+      display-name: '&e&lИнформация'
       lore:
-        - "§7Текущая ставка: §f%current_bid%"
-        - "§7Мин. шаг: §f%min_step%"
-        - "§7Лидер: §f%leader%"
-        - "§7До конца: §f%time_left%"
+        - "&7Текущая ставка: &f%current_bid%"
+        - "&7Мин. шаг: &f%min_step%"
+        - "&7Лидер: &f%leader%"
+        - "&7До конца: &f%time_left%"
     bid-min:
       slots: [14]
       material: "GOLD_NUGGET"
-      display-name: "§e+%min_step%"
+      display-name: "&e+%min_step%"
       lore:
-        - "§7Поднять ставку на"
-        - "§7минимальный шаг"
+        - "&7Поднять ставку на"
+        - "&7минимальный шаг"
     bid-custom:
       slots: [16]
       material: "GOLD_INGOT"
-      display-name: "§6§lРучная ставка"
+      display-name: "&6&lРучная ставка"
       lore:
-        - "§7Введите свою сумму"
-        - "§7в чате"
+        - "&7Введите свою сумму"
+        - "&7в чате"
     quick-bid:
       slots: [19, 20, 21, 22]
       bids: [100, 500, 1000, 5000]
       material: "GOLD_BLOCK"
       display-name: "&6&l+%bid%"
       lore:
-        - "§7Поднять ставку на"
-        - "§7%bid%"
+        - "&7Поднять ставку на"
+        - "&7%bid%"
     back:
       slots: [25]
       material: "ARROW"
-      display-name: "§c§lНазад"
+      display-name: "&c&lНазад"
       menu: 'main-menu'
 
 claims-menu:
-  title: "§6§lМои предметы"
+  title: "&6&lМои предметы"
   size: 54
 
   items:
@@ -101,18 +101,18 @@ claims-menu:
     claim-all:
       slots: [52]
       material: "EMERALD"
-      display-name: "§a§lЗабрать всё"
+      display-name: "&a&lЗабрать всё"
       lore:
-        - "§7Попытаться забрать"
-        - "§7все предметы сразу"
+        - "&7Попытаться забрать"
+        - "&7все предметы сразу"
     back:
       slots: [53]
       material: "ARROW"
-      display-name: "§c§lНазад"
+      display-name: "&c&lНазад"
       menu: 'main-menu'
 
 my-history-menu:
-  title: "§6§lМоя история"
+  title: "&6&lМоя история"
   size: 54
 
   items:
@@ -126,25 +126,25 @@ my-history-menu:
     previous-page:
       slots: [51]
       material: "ARROW"
-      display-name: "§aПредыдущая страница"
+      display-name: "&aПредыдущая страница"
     next-page:
       slots: [52]
       material: "ARROW"
-      display-name: "§aСледующая страница"
+      display-name: "&aСледующая страница"
     back:
       slots: [53]
       material: "BARRIER"
-      display-name: "§c§lНазад"
+      display-name: "&c&lНазад"
       menu: 'main-menu'
 
 admin-menu:
-  title: "§c§lАдмин панель"
+  title: "&c&lАдмин панель"
   size: 45
 
   items:
     inactive-lot:
       material: "GRAY_STAINED_GLASS_PANE"
-      display-name: "§7§lНеактивный лот"
+      display-name: "&7&lНеактивный лот"
     lot:
       slots: [ 10, 13, 16, 28, 31, 34 ]
       lore:
@@ -219,11 +219,11 @@ admin-history-menu:
     previous-page:
       slots: [50]
       material: "ARROW"
-      display-name: "§aПредыдущая страница"
+      display-name: "&aПредыдущая страница"
     next-page:
       slots: [51]
       material: "ARROW"
-      display-name: "§aСледующая страница"
+      display-name: "&aСледующая страница"
     back:
       slots: [53]
       material: "ARROW"

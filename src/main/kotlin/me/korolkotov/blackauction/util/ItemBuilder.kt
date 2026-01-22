@@ -19,10 +19,10 @@ import org.bukkit.potion.PotionEffectType
 import org.bukkit.potion.PotionType
 import java.util.UUID
 
-class ItemBuilder private constructor(
+class ItemBuilder(
     private val item: ItemStack
 ) {
-    private val meta: ItemMeta = item.itemMeta!!
+    private val meta: ItemMeta = if (item.hasItemMeta()) item.itemMeta!! else Bukkit.getItemFactory().getItemMeta(item.type)
 
     fun amount(value: Int) = apply {
         item.amount = value.coerceIn(1, item.maxStackSize)

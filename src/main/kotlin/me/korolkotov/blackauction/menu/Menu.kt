@@ -1,23 +1,29 @@
 package me.korolkotov.blackauction.menu
 
+import me.korolkotov.blackauction.config.ConfigManager
+import me.korolkotov.blackauction.config.MenuConfig
+import me.korolkotov.blackauction.load.LoadManager
 import me.korolkotov.blackauction.menu.button.Button
-import net.kyori.adventure.text.Component
+import me.korolkotov.blackauction.menu.impls.MainMenu
+import me.korolkotov.blackauction.util.asComponent
 import org.bukkit.Bukkit
 import org.bukkit.entity.Player
 import org.bukkit.event.inventory.InventoryClickEvent
 import org.bukkit.inventory.Inventory
 import org.bukkit.inventory.InventoryHolder
 
-abstract class Menu(
-    title: Component,
-    val size: Int
-) : InventoryHolder {
+abstract class Menu(id: String) : InventoryHolder {
     private val buttons = mutableListOf<Button>()
-    protected val inv = Bukkit.createInventory(this, size, title)
+    protected val config: MenuConfig = ConfigManager.instance.getMenus().firstOrNull { it.id.equals(id, true) }
+        ?: throw RuntimeException("Can't get menu by id $id")
+
+    protected lateinit var inv: Inventory
 
     private var initialized = false
 
     fun init(player: Player) {
+        inv = createInventory()
+
         buttons.clear()
         initButtons(player)
 
@@ -28,6 +34,8 @@ abstract class Menu(
                 inv.setItem(slot, button.getItem(slot))
             }
         }
+
+        LoadManager.getInstance(MenuManager::class.java).addMenu(this)
     }
 
     override fun getInventory(): Inventory = inv
@@ -38,7 +46,7 @@ abstract class Menu(
     }
 
     fun update() {
-        for (i in 0..size) update(i)
+        for (i in 0..inv.size) update(i)
     }
 
     fun onClick(event: InventoryClickEvent) {
@@ -57,15 +65,27 @@ abstract class Menu(
         player.openInventory(inv)
     }
 
-    abstract fun canDrag(): Boolean
-    abstract fun initButtons(player: Player)
+    abstract fun canDrag(slot: Int): Boolean
+    protected open fun createInventory(): Inventory = Bukkit.createInventory(this, config.size, config.title.asComponent())
+    protected abstract fun initButtons(player: Player)
 
     open fun onClose(player: Player) {}
+
+    protected fun getButtons() = buttons.toList()
 
     protected fun addButton(button: Button) {
         if (buttons.contains(button)) return
         if (button.getSlots().isEmpty()) return
 
         buttons.add(button)
+    }
+
+    companion object {
+        fun getFromId(id: String, player: Player): Menu? {
+            return when (id.lowercase()) {
+                "main-menu" -> MainMenu()
+                else -> null
+            }
+        }
     }
 }

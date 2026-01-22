@@ -12,10 +12,11 @@ class ConfigManager : LoadManagerInterface<ConfigManager> {
 
     val dataFolder get() = Main.instance.dataFolder
 
+    private val menuConfigs = mutableListOf<MenuConfig>()
+
     lateinit var config: GeneralConfig
     lateinit var databaseConfig: DatabaseConfig
     lateinit var messageConfig: MessageConfig
-    lateinit var menuConfig: MenuConfig
 
     init {
         instance = this
@@ -34,12 +35,19 @@ class ConfigManager : LoadManagerInterface<ConfigManager> {
         messageConfig = MessageConfig(languageFile.getConfigurationSection("messages")!!)
 
         val menu = loadOrCreate("menu.yml")
-        menuConfig = MenuConfig(menu)
+        for (id in menu.getKeys(false)) {
+            val section = menu.getConfigurationSection(id) ?: continue
+            val menuConfig = MenuConfig(id, section)
+            menuConfigs.add(menuConfig)
+        }
     }
 
     override fun reload() {
+        menuConfigs.clear()
         initialize()
     }
+
+    fun getMenus() = menuConfigs.toList()
 
     private fun loadOrCreate(fileName: String, fill: Boolean = true): YamlConfiguration {
         val file = File(dataFolder, fileName)
