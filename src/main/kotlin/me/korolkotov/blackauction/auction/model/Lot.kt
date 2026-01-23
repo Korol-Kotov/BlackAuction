@@ -18,4 +18,6 @@ data class Lot(
 
     var currentBid: Double,
     var leader: UUID?
-)
+) {
+    var extensions = 0
+}

@@ -11,6 +11,7 @@ import me.korolkotov.blackauction.util.getName
 import org.bukkit.Bukkit
 import org.bukkit.entity.Player
 import java.time.Clock
+import java.time.temporal.ChronoUnit
 
 class BidProcessor(
     private val manager: AuctionManager
@@ -18,10 +19,10 @@ class BidProcessor(
     fun processBid(lot: Lot, player: Player, amount: Double) {
         if (lot.currentBid >= amount) return
         if (lot.leader != null) {
-            val player = Bukkit.getOfflinePlayer(lot.leader!!)
-            EconomyManager.instance.deposit(player, lot.currentBid)
-            if (player.isOnline) {
-                MessageService.sendMessage(player.player!!, ConfigManager.instance.messageConfig.notifications.youWereOutbid,
+            val leader = Bukkit.getOfflinePlayer(lot.leader!!)
+            EconomyManager.instance.deposit(leader, lot.currentBid)
+            if (leader.isOnline) {
+                MessageService.sendMessage(leader.player!!, ConfigManager.instance.messageConfig.notifications.youWereOutbid,
                     mapOf("%item%" to lot.item.getName(), "%amount%" to amount.toString()))
             }
         }
@@ -29,17 +30,31 @@ class BidProcessor(
         lot.leader = player.uniqueId
         lot.currentBid = amount
         EconomyManager.instance.withdraw(player, amount)
+        MessageService.sendMessage(player, ConfigManager.instance.messageConfig.successConfig.bidPlaced,
+            mapOf("%amount%" to amount.toString()))
+        val now = Clock.systemUTC().instant()
         val bid = Bid(
             0,
             lot.id,
             player.uniqueId,
             player.name,
             amount,
-            Clock.systemUTC().instant()
+            now
         )
         PluginCoroutineScope.scope.launch {
             manager.repository.bidDao.create(bid)
             manager.repository.lotDao.updateBid(lot.id, amount, player.uniqueId)
+        }
+
+        if (!ConfigManager.instance.config.auction.antiSnipe.enabled) return
+        if (lot.extensions >= ConfigManager.instance.config.auction.antiSnipe.maxExtensions) return
+        if (ChronoUnit.SECONDS.between(now, lot.endTime)
+            <= ConfigManager.instance.config.auction.antiSnipe.triggerSeconds) {
+            lot.extensions++
+            val extend = ConfigManager.instance.config.auction.antiSnipe.extendBySeconds
+            lot.endTime = lot.endTime.plusSeconds(extend.toLong())
+            MessageService.broadcast(ConfigManager.instance.messageConfig.notifications.auctionExtended,
+                mapOf("%seconds%" to extend.toString()))
         }
     }
 }

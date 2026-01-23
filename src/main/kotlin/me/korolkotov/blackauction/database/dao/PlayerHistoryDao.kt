@@ -6,6 +6,6 @@ import java.util.UUID
 
 interface PlayerHistoryDao {
     fun add(entry: PlayerHistory): Int
-    fun markClaimed(id: Int, claimedAt: Instant)
+    fun markClaimed(lotId: Int, claimedAt: Instant)
     fun findByPlayer(playerUuid: UUID): List<PlayerHistory>
 }

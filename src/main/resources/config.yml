@@ -7,6 +7,16 @@ auction:
     max-lots: 6
     date-format: "dd.MM.yyyy HH:mm"
     time-format: "mm:ss"
+  anti-snipe:
+    enabled: true
+    trigger-seconds: 30
+    extend-by-seconds: 15
+    max-extensions: 5
+  economy:
+    commission-percent: 10.0
+    fixed-commission: 0.0
+    commission-destination: TREASURY
+    treasury-account: "SERVER_BANK"
   bidding:
     default-start-price: 100.0
     default-bid-step: 50.0

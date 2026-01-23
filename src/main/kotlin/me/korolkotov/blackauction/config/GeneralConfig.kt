@@ -15,14 +15,30 @@ class PluginConfig(section: ConfigurationSection) {
 
 class AuctionConfig(section: ConfigurationSection) {
     val general = AuctionGeneralConfig(section.getConfigurationSection("general")!!)
+    val antiSnipe = AuctionAntiSnipeConfig(section.getConfigurationSection("anti-snipe")!!)
+    val economy = AuctionEconomyConfig(section.getConfigurationSection("economy")!!)
     val bidding = AuctionBiddingConfig(section.getConfigurationSection("bidding")!!)
     val notifications = AuctionNotificationsConfig(section.getConfigurationSection("notifications")!!)
+}
+
+class AuctionAntiSnipeConfig(section: ConfigurationSection) {
+    val enabled = section.getBoolean("enabled")
+    val triggerSeconds = section.getInt("trigger-seconds")
+    val extendBySeconds = section.getInt("extend-by-seconds")
+    val maxExtensions = section.getInt("max-extensions")
 }
 
 class AuctionGeneralConfig(section: ConfigurationSection) {
     val maxLots = section.getInt("max-lots")
     val dateFormat = section.getString("date-format")!!
     val timeFormat = section.getString("time-format")!!
+}
+
+class AuctionEconomyConfig(section: ConfigurationSection) {
+    val commissionPercent = section.getDouble("commission-percent")
+    val fixedCommission = section.getDouble("fixed-commission")
+    val commissionDestination = section.getString("commission-destination")!!
+    val treasuryAccount = section.getString("treasury-account")!!
 }
 
 class AuctionBiddingConfig(section: ConfigurationSection) {

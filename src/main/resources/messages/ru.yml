@@ -15,6 +15,7 @@ messages:
     claims-is-empty: 'У вас нет незабранных предметов.'
 
   success:
+    bid-placed: 'Вы сделали ставку %amount%.'
     claimed-some: 'Вы забрали некоторую часть предметов.'
     claimed-all: 'Вы забрали все предметы.'
 

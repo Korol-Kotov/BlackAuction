@@ -32,6 +32,7 @@ class ErrorsConfig(section: ConfigurationSection) {
 class SuccessConfig(section: ConfigurationSection) {
     val claimedSome = section.getString("claimed-some")!!
     val claimedAll = section.getString("claimed-all")!!
+    val bidPlaced = section.getString("bid-placed")!!
 }
 
 class ScannerConfig(section: ConfigurationSection) {

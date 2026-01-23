@@ -1,9 +1,13 @@
 package me.korolkotov.blackauction.auction
 
 import kotlinx.coroutines.launch
+import me.korolkotov.blackauction.auction.cache.AuctionCache
+import me.korolkotov.blackauction.auction.cache.ClaimCache
+import me.korolkotov.blackauction.auction.cache.PlayerHistoryCache
 import me.korolkotov.blackauction.auction.model.Claim
 import me.korolkotov.blackauction.auction.model.Lot
 import me.korolkotov.blackauction.auction.model.LotStatus
+import me.korolkotov.blackauction.auction.model.PlayerHistory
 import me.korolkotov.blackauction.config.ConfigManager
 import me.korolkotov.blackauction.coroutine.PluginCoroutineScope
 import me.korolkotov.blackauction.database.DatabaseManager
@@ -23,6 +27,7 @@ class AuctionManager : LoadManagerInterface<AuctionManager> {
 
     val auctionCache = AuctionCache()
     val claimsCache = ClaimCache()
+    val playerHistoryCache = PlayerHistoryCache()
 
     lateinit var repository: AuctionRepository private set
     lateinit var scheduler: AuctionScheduler private set
@@ -83,6 +88,18 @@ class AuctionManager : LoadManagerInterface<AuctionManager> {
         }
 
         val list = claimsCache.get(player.uniqueId) ?: emptyList()
+        return list
+    }
+
+    fun getHistory(player: Player): List<PlayerHistory> {
+        if (!playerHistoryCache.has(player.uniqueId)) {
+            playerHistoryCache.put(player.uniqueId, emptyList())
+            PluginCoroutineScope.scope.launch {
+                playerHistoryCache.put(player.uniqueId, repository.playerHistoryDao.findByPlayer(player.uniqueId))
+            }
+        }
+
+        val list = playerHistoryCache.get(player.uniqueId) ?: emptyList()
         return list
     }
 }

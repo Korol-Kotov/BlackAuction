@@ -38,13 +38,13 @@ class JdbcPlayerHistoryDao(
             }
         }
 
-    override fun markClaimed(id: Int, claimedAt: Instant) {
+    override fun markClaimed(lotId: Int, claimedAt: Instant) {
         ds.connection.use { con ->
             con.prepareStatement(
-                "UPDATE ba_player_history SET claimed_at = ?, status = 'CLAIMED' WHERE id = ?"
+                "UPDATE ba_player_history SET claimed_at = ? WHERE lot_id = ?"
             ).use { ps ->
                 ps.setInstant(1, claimedAt)
-                ps.setInt(2, id)
+                ps.setInt(2, lotId)
                 ps.executeUpdate()
             }
         }

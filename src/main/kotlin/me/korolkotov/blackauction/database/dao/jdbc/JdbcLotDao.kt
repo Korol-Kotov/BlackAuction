@@ -96,7 +96,7 @@ class JdbcLotDao(
     override fun findActiveOrPlanned(now: Instant): List<Lot> =
         ds.connection.use { con ->
             con.prepareStatement(
-                "SELECT * FROM ba_lots WHERE status IN (0, 1) AND start_time <= ? AND end_time > ?"
+                "SELECT * FROM ba_lots WHERE status IN (0, 1) AND end_time > ?"
             ).use { ps ->
                 ps.setInstant(1, now)
                 ps.setInstant(2, now)

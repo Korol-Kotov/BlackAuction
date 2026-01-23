@@ -15,6 +15,7 @@ import me.korolkotov.blackauction.util.format
 import org.bukkit.Material
 import org.bukkit.entity.Player
 import org.bukkit.inventory.ItemStack
+import java.time.Clock
 
 class ClaimsMenu(
     private val player: Player,
@@ -48,9 +49,8 @@ class ClaimsMenu(
             val index = claimItem.getSlots().indexOf(data.slot) + (page - 1) * claimItem.getSlots().size
             val claim = claims.getOrNull(index) ?: return@SimpleButton
             if (give(player, claim.item)) {
-                auctionManager.claimsCache.removeClaim(this.player.uniqueId, claim)
+                removeClaim(claim)
                 update()
-                PluginCoroutineScope.scope.launch { auctionManager.repository.claimDao.delete(claim.id) }
             } else {
                 MessageService.sendMessage(data.player, ConfigManager.instance.messageConfig.errorsConfig.inventoryIsFull)
             }
@@ -61,6 +61,8 @@ class ClaimsMenu(
             { if (page > 1) previousPage.getItem()!! else ItemStack(Material.AIR) },
             previousPage.getSlots()
         ) { data ->
+            if (inv.getItem(data.slot)?.type?.isEmpty != false) return@SimpleButton
+
             val menu = ClaimsMenu(player, page - 1)
             menu.open(data.player)
         })
@@ -75,6 +77,8 @@ class ClaimsMenu(
             },
             nextPage.getSlots()
         ) { data ->
+            if (inv.getItem(data.slot)?.type?.isEmpty != false) return@SimpleButton
+
             val menu = ClaimsMenu(player, page + 1)
             menu.open(data.player)
         })
@@ -92,8 +96,7 @@ class ClaimsMenu(
             var given = 0
             for (claim in claims) {
                 if (give(player, claim.item)) {
-                    auctionManager.claimsCache.removeClaim(this.player.uniqueId, claim)
-                    PluginCoroutineScope.scope.launch { auctionManager.repository.claimDao.delete(claim.id) }
+                    removeClaim(claim)
                     given++
                 }
             }
@@ -108,6 +111,15 @@ class ClaimsMenu(
                 }
             }
         })
+    }
+
+    private fun removeClaim(claim: Claim) {
+        val am = auctionManager
+        am.claimsCache.removeClaim(player.uniqueId, claim)
+        PluginCoroutineScope.scope.launch {
+            am.repository.claimDao.delete(claim.id)
+            am.repository.playerHistoryDao.markClaimed(claim.lotId, Clock.systemUTC().instant())
+        }
     }
 
     private fun give(player: Player, itemStack: ItemStack): Boolean {
