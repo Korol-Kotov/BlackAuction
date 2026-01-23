@@ -87,7 +87,7 @@ abstract class Menu(id: String) : InventoryHolder {
             return when (id.lowercase()) {
                 "main-menu" -> MainMenu()
                 "claims-menu" -> ClaimsMenu(player, 1)
-                "my-history-menu" -> HistoryMenu(player)
+                "my-history-menu" -> HistoryMenu(player, 1)
                 else -> null
             }
         }
