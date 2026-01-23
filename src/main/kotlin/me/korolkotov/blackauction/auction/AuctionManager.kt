@@ -1,6 +1,7 @@
 package me.korolkotov.blackauction.auction
 
 import kotlinx.coroutines.launch
+import me.korolkotov.blackauction.auction.model.Claim
 import me.korolkotov.blackauction.auction.model.Lot
 import me.korolkotov.blackauction.auction.model.LotStatus
 import me.korolkotov.blackauction.config.ConfigManager
@@ -20,11 +21,12 @@ class AuctionManager : LoadManagerInterface<AuctionManager> {
         lateinit var instance: AuctionManager private set
     }
 
-    val cache = AuctionCache()
-    val bidProcessor = BidProcessor()
+    val auctionCache = AuctionCache()
+    val claimsCache = ClaimCache()
 
     lateinit var repository: AuctionRepository private set
     lateinit var scheduler: AuctionScheduler private set
+    lateinit var bidProcessor: BidProcessor private set
 
     init {
         instance = this
@@ -36,16 +38,17 @@ class AuctionManager : LoadManagerInterface<AuctionManager> {
         repository = LoadManager.getInstance(DatabaseManager::class.java).auctionRepository
         scheduler = AuctionScheduler(this)
         scheduler.startScheduler()
+        bidProcessor = BidProcessor(this)
 
         PluginCoroutineScope.scope.launch {
             repository.lotDao.findActiveOrPlanned(Clock.systemUTC().instant()).forEach { lot ->
-                cache.put(lot.slot, lot)
+                auctionCache.put(lot.slot, lot)
             }
         }
     }
 
     fun canCreateLot(): Boolean =
-        cache.getLots().filter { it.status == LotStatus.PLANNED || it.status == LotStatus.RUNNING }.size < ConfigManager.instance.config.auction.general.maxLots
+        auctionCache.getLots().filter { it.status == LotStatus.PLANNED || it.status == LotStatus.RUNNING }.size < ConfigManager.instance.config.auction.general.maxLots
 
     fun createLot(creator: Player): Lot {
         val config = ConfigManager.instance.config.auction
@@ -54,7 +57,7 @@ class AuctionManager : LoadManagerInterface<AuctionManager> {
         val end = start.plus(1, ChronoUnit.HOURS)
         val lot = Lot(
             0,
-            cache.nextSlot(),
+            auctionCache.nextSlot(),
             ItemStack(Material.AIR),
             config.bidding.defaultStartPrice,
             config.bidding.defaultBidStep,
@@ -66,8 +69,20 @@ class AuctionManager : LoadManagerInterface<AuctionManager> {
             0.0,
             null
         )
-        cache.put(lot.slot, lot)
+        auctionCache.put(lot.slot, lot)
         PluginCoroutineScope.scope.launch { repository.lotDao.create(lot) }
         return lot
+    }
+
+    fun getClaims(player: Player): List<Claim> {
+        if (!claimsCache.has(player.uniqueId)) {
+            claimsCache.put(player.uniqueId, emptyList())
+            PluginCoroutineScope.scope.launch {
+                claimsCache.put(player.uniqueId, repository.claimDao.findByPlayer(player.uniqueId))
+            }
+        }
+
+        val list = claimsCache.get(player.uniqueId) ?: emptyList()
+        return list
     }
 }

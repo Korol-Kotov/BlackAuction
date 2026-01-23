@@ -53,6 +53,7 @@ lot-menu:
       display-name: '&e&lИнформация'
       lore:
         - "&7Текущая ставка: &f%current_bid%"
+        - "&7Старт. цена: &f%start_price%"
         - "&7Мин. шаг: &f%min_step%"
         - "&7Лидер: &f%leader%"
         - "&7До конца: &f%time_left%"
@@ -95,9 +96,17 @@ claims-menu:
         - '─────────────'
         - '📅 Дата: %date%'
         - '💰 Цена: %final_price% ₽'
-        - '📦 Статус: %status%'
+        - '📦 Статус: Ожидает получения'
         - '─────────────'
         - '▶ Нажмите, чтобы забрать'
+    previous-page:
+      slots: [50]
+      material: "ARROW"
+      display-name: "&aПредыдущая страница"
+    next-page:
+      slots: [51]
+      material: "ARROW"
+      display-name: "&aСледующая страница"
     claim-all:
       slots: [52]
       material: "EMERALD"

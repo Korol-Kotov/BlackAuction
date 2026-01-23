@@ -4,6 +4,7 @@ import me.korolkotov.blackauction.config.ConfigManager
 import me.korolkotov.blackauction.config.MenuConfig
 import me.korolkotov.blackauction.load.LoadManager
 import me.korolkotov.blackauction.menu.button.Button
+import me.korolkotov.blackauction.menu.impls.ClaimsMenu
 import me.korolkotov.blackauction.menu.impls.MainMenu
 import me.korolkotov.blackauction.util.asComponent
 import org.bukkit.Bukkit
@@ -84,6 +85,7 @@ abstract class Menu(id: String) : InventoryHolder {
         fun getFromId(id: String, player: Player): Menu? {
             return when (id.lowercase()) {
                 "main-menu" -> MainMenu()
+                "claims-menu" -> ClaimsMenu(player, 1)
                 else -> null
             }
         }

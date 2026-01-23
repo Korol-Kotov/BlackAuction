@@ -20,7 +20,7 @@ class AuctionScheduler(
         PluginCoroutineScope.scope.launch {
             while (true) {
                 val now = Clock.systemUTC().instant()
-                manager.cache.getLots().forEach { lot ->
+                manager.auctionCache.getLots().forEach { lot ->
                     when (lot.status) {
                         LotStatus.PLANNED -> {
                             val warnBeforeStart = ConfigManager.instance.config.auction.notifications.warnBeforeStart
@@ -60,7 +60,7 @@ class AuctionScheduler(
                         }
                         LotStatus.FINISHED,
                         LotStatus.CANCELLED -> {
-                            manager.cache.remove(lot.slot)
+                            manager.auctionCache.remove(lot.slot)
                             return@forEach
                         }
                     }

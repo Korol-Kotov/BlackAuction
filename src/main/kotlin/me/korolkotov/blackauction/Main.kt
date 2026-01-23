@@ -1,5 +1,6 @@
 package me.korolkotov.blackauction
 
+import me.korolkotov.blackauction.coroutine.PluginCoroutineScope
 import me.korolkotov.blackauction.load.LoadManager
 import me.korolkotov.blackauction.logger.Logger
 import org.bukkit.plugin.java.JavaPlugin
@@ -21,6 +22,7 @@ class Main : JavaPlugin() {
     override fun onDisable() {
         Logger.instance.debug("Disabling plugin.")
         loadManager.terminate()
+        PluginCoroutineScope.shutdown()
         logger.info("Plugin $name disabled!")
     }
 }

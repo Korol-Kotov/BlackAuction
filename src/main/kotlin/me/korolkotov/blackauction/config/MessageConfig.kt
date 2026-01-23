@@ -7,6 +7,9 @@ class MessageConfig(section: ConfigurationSection) {
 
     val helpConfig = HelpConfig(section.getConfigurationSection("help")!!)
     val errorsConfig = ErrorsConfig(section.getConfigurationSection("errors")!!)
+    val successConfig = SuccessConfig(section.getConfigurationSection("success")!!)
+    val scannerConfig = ScannerConfig(section.getConfigurationSection("scanner")!!)
+    val warningsConfig = WarningsConfig(section.getConfigurationSection("warnings")!!)
     val notifications = NotificationsConfig(section.getConfigurationSection("notifications")!!)
 }
 
@@ -21,6 +24,23 @@ class ErrorsConfig(section: ConfigurationSection) {
     val notEnoughArgs = section.getString("not-enough-args")!!
     val onlyForPlayer = section.getString("only-for-player")!!
     val somethingWentWrong = section.getString("something-went-wrong")!!
+    val wrongNumber = section.getString("wrong-number")!!
+    val inventoryIsFull = section.getString("inventory-is-full")!!
+    val claimsIsEmpty = section.getString("claims-is-empty")!!
+}
+
+class SuccessConfig(section: ConfigurationSection) {
+    val claimedSome = section.getString("claimed-some")!!
+    val claimedAll = section.getString("claimed-all")!!
+}
+
+class ScannerConfig(section: ConfigurationSection) {
+    val specifyNumber = section.getString("specify-number")!!
+}
+
+class WarningsConfig(section: ConfigurationSection) {
+    val notEnoughMoney = section.getString("not-enough-money")!!
+    val notMinBid = section.getString("not-min-bid")!!
 }
 
 class NotificationsConfig(section: ConfigurationSection) {

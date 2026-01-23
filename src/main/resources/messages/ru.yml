@@ -10,6 +10,20 @@ messages:
     not-enough-args: 'Недостаточно аргументов. Правильное использование: %usage%'
     only-for-player: 'Эта команда доступна только для игроков.'
     something-went-wrong: 'Что-то пошло не так. Обратитесь к администрации.'
+    wrong-number: 'Вы ввели не число.'
+    inventory-is-full: 'Освободите инвентарь, чтобы получить предмет.'
+    claims-is-empty: 'У вас нет незабранных предметов.'
+
+  success:
+    claimed-some: 'Вы забрали некоторую часть предметов.'
+    claimed-all: 'Вы забрали все предметы.'
+
+  scanner:
+    specify-number: 'Введите число в чат.'
+
+  warnings:
+    not-enough-money: 'У вас недостаточно средст на балансе.'
+    not-min-bid: 'Минимальная возможная сумма на текущий момент: %need%.'
 
   notifications:
     auction-starting: "Черный аукцион начинается через %time%!"

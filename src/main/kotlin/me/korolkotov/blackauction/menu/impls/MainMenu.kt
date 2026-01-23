@@ -2,6 +2,7 @@ package me.korolkotov.blackauction.menu.impls
 
 import me.korolkotov.blackauction.auction.AuctionManager
 import me.korolkotov.blackauction.auction.model.Lot
+import me.korolkotov.blackauction.auction.model.LotStatus
 import me.korolkotov.blackauction.config.ConfigManager
 import me.korolkotov.blackauction.load.LoadManager
 import me.korolkotov.blackauction.menu.Menu
@@ -42,13 +43,14 @@ class MainMenu : Menu("main-menu") {
             addButton(SimpleButton(
                 { slot ->
                     val lotSlot = config.getItem("lot").getSlots().indexOf(slot)
-                    val lot = auctionManager.cache.get(lotSlot)
+                    val lot = auctionManager.auctionCache.get(lotSlot)
                     if (lot != null) getLotItem(lot) else getInactiveLotItem()
                 },
                 listOf(slot)
             ) { data ->
                 val lotSlot = config.getItem("lot").getSlots().indexOf(data.slot)
-                val lot = auctionManager.cache.get(lotSlot) ?: return@SimpleButton
+                val lot = auctionManager.auctionCache.get(lotSlot) ?: return@SimpleButton
+                if (lot.status != LotStatus.RUNNING) return@SimpleButton
                 val lotMenu = LotMenu(lot)
                 lotMenu.open(data.player)
             })
