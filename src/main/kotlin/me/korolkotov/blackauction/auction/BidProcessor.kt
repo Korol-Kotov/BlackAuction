@@ -6,6 +6,7 @@ import me.korolkotov.blackauction.auction.model.Lot
 import me.korolkotov.blackauction.config.ConfigManager
 import me.korolkotov.blackauction.coroutine.PluginCoroutineScope
 import me.korolkotov.blackauction.economy.EconomyManager
+import me.korolkotov.blackauction.logger.Logger
 import me.korolkotov.blackauction.util.MessageService
 import me.korolkotov.blackauction.util.getName
 import org.bukkit.Bukkit
@@ -30,6 +31,7 @@ class BidProcessor(
         lot.leader = player.uniqueId
         lot.currentBid = amount
         EconomyManager.instance.withdraw(player, amount)
+        Logger.instance.debug("New bid to ${lot.id}: ${player.name} made a bid of $amount")
         MessageService.sendMessage(player, ConfigManager.instance.messageConfig.successConfig.bidPlaced,
             mapOf("%amount%" to amount.toString()))
         val now = Clock.systemUTC().instant()

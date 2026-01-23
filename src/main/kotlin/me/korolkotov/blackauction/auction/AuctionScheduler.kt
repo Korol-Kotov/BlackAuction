@@ -11,6 +11,7 @@ import me.korolkotov.blackauction.config.ConfigManager
 import me.korolkotov.blackauction.coroutine.PluginCoroutineScope
 import me.korolkotov.blackauction.economy.CommissionCalculator
 import me.korolkotov.blackauction.economy.EconomyManager
+import me.korolkotov.blackauction.logger.Logger
 import me.korolkotov.blackauction.util.MessageService
 import me.korolkotov.blackauction.util.PlayerUtil
 import me.korolkotov.blackauction.util.getName
@@ -35,6 +36,7 @@ class AuctionScheduler(
                             if (isStarted) {
                                 notified.remove(lot)
                                 run(lot)
+                                Logger.instance.debug("Lot ${lot.id} (slot ${lot.slot}) has just started")
                             } else {
                                 val remaining = ChronoUnit.SECONDS.between(now, lot.startTime).toInt()
                                 val list = notified.getOrDefault(lot, mutableListOf())
@@ -52,6 +54,7 @@ class AuctionScheduler(
                             if (isEnded) {
                                 notified.remove(lot)
                                 end(lot)
+                                Logger.instance.debug("Lot ${lot.id} (slot: ${lot.slot}) has just ended")
                             } else {
                                 if (lot.leader == null) return@forEach
                                 val leader = Bukkit.getPlayer(lot.leader!!) ?: return@forEach
@@ -154,6 +157,7 @@ class AuctionScheduler(
         )
         manager.lotHistoryCache.add(history)
         PluginCoroutineScope.scope.launch { manager.repository.lotHistoryDao.add(history) }
+        Logger.instance.debug("Lot ${lot.id} has been finished.")
     }
 
     fun cancel(lot: Lot) {
@@ -174,10 +178,14 @@ class AuctionScheduler(
             now, now
         )
         PluginCoroutineScope.scope.launch { manager.repository.claimDao.add(claim) }
+        Logger.instance.debug("Lot ${lot.id} has been cancelled.")
     }
 
     private fun Lot.changeStatus(new: LotStatus) {
         this.status = new
-        PluginCoroutineScope.scope.launch { manager.repository.lotDao.updateStatus(this@changeStatus.id, new) }
+        PluginCoroutineScope.scope.launch {
+            manager.repository.lotDao.updateStatus(this@changeStatus.id, new)
+            Logger.instance.debug("Updated lot status (id $id, slot $slot) to ${new.name}")
+        }
     }
 }

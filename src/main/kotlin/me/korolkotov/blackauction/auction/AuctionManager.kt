@@ -1,6 +1,7 @@
 package me.korolkotov.blackauction.auction
 
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import me.korolkotov.blackauction.auction.cache.AuctionCache
 import me.korolkotov.blackauction.auction.cache.ClaimCache
 import me.korolkotov.blackauction.auction.cache.LotHistoryCache
@@ -11,11 +12,14 @@ import me.korolkotov.blackauction.auction.model.LotHistory
 import me.korolkotov.blackauction.auction.model.LotStatus
 import me.korolkotov.blackauction.auction.model.PlayerHistory
 import me.korolkotov.blackauction.config.ConfigManager
+import me.korolkotov.blackauction.coroutine.BukkitDispatcher
 import me.korolkotov.blackauction.coroutine.PluginCoroutineScope
 import me.korolkotov.blackauction.database.DatabaseManager
 import me.korolkotov.blackauction.database.repository.AuctionRepository
 import me.korolkotov.blackauction.load.LoadManager
 import me.korolkotov.blackauction.load.LoadManagerInterface
+import me.korolkotov.blackauction.logger.Logger
+import org.bukkit.Bukkit
 import org.bukkit.Material
 import org.bukkit.entity.Player
 import org.bukkit.inventory.ItemStack
@@ -52,8 +56,14 @@ class AuctionManager : LoadManagerInterface<AuctionManager> {
             repository.lotDao.findActiveOrPlanned(Clock.systemUTC().instant()).forEach { lot ->
                 auctionCache.put(lot.slot, lot)
             }
+            withContext(BukkitDispatcher.MAIN) {
+                Logger.instance.debug("Lots have been loaded to the cache")
+            }
 
             lotHistoryCache.addAll(repository.lotHistoryDao.findRecent(500))
+            withContext(BukkitDispatcher.MAIN) {
+                Logger.instance.debug("Lot's history has been loaded to the cache")
+            }
         }
     }
 
@@ -80,6 +90,7 @@ class AuctionManager : LoadManagerInterface<AuctionManager> {
             null
         )
         auctionCache.put(lot.slot, lot)
+        Logger.instance.debug("Created a new lot. (creator: ${creator.name}, slot: ${lot.slot})")
         PluginCoroutineScope.scope.launch { repository.lotDao.create(lot) }
         return lot
     }
@@ -89,6 +100,7 @@ class AuctionManager : LoadManagerInterface<AuctionManager> {
             claimsCache.put(player.uniqueId, emptyList())
             PluginCoroutineScope.scope.launch {
                 claimsCache.put(player.uniqueId, repository.claimDao.findByPlayer(player.uniqueId))
+                Logger.instance.debug("Loaded claims to cache")
             }
         }
 
@@ -101,6 +113,7 @@ class AuctionManager : LoadManagerInterface<AuctionManager> {
             playerHistoryCache.put(player.uniqueId, emptyList())
             PluginCoroutineScope.scope.launch {
                 playerHistoryCache.put(player.uniqueId, repository.playerHistoryDao.findByPlayer(player.uniqueId))
+                Logger.instance.debug("Loaded player history to cache")
             }
         }
 

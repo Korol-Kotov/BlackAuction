@@ -11,6 +11,7 @@ class MessageConfig(section: ConfigurationSection) {
     val scannerConfig = ScannerConfig(section.getConfigurationSection("scanner")!!)
     val warningsConfig = WarningsConfig(section.getConfigurationSection("warnings")!!)
     val notifications = NotificationsConfig(section.getConfigurationSection("notifications")!!)
+    val commands = CommandsConfig(section.getConfigurationSection("commands")!!)
 }
 
 class HelpConfig(private val section: ConfigurationSection) {
@@ -31,6 +32,7 @@ class ErrorsConfig(section: ConfigurationSection) {
     val cantChangeLot = section.getString("cant-change-lot")!!
     val wrongDate = section.getString("wrong-date")!!
     val playerNotFound = section.getString("player-not-found")!!
+    val lotNotFound = section.getString("lot-not-found")!!
 }
 
 class SuccessConfig(section: ConfigurationSection) {
@@ -57,4 +59,10 @@ class NotificationsConfig(section: ConfigurationSection) {
     val youWereOutbid = section.getString("you-were-outbid")!!
     val youWon = section.getString("you-won")!!
     val auctionExtended = section.getString("auction-extended")!!
+}
+
+class CommandsConfig(section: ConfigurationSection) {
+    val cancel = section.getString("cancel")!!
+    val end = section.getString("end")!!
+    val reload = section.getString("reload")!!
 }

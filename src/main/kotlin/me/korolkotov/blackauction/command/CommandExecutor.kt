@@ -25,12 +25,7 @@ abstract class CommandExecutor : TabExecutor {
     }
 
     override fun onCommand(sender: CommandSender, command: Command, label: String, args: Array<out String>): Boolean {
-        if (args.isEmpty()) {
-            sendHelpMessage(sender, label)
-            return true
-        }
-
-        val subCommand = args[0]
+        val subCommand = args.getOrNull(0)
         val args1 = args.getOrNull(1)
 
         val wrappers = getCommandWrappers(subCommand, args1)
@@ -40,7 +35,7 @@ abstract class CommandExecutor : TabExecutor {
             if (wrapper.getCommand().subCommands.isNotEmpty()) index++
 
             val result = runCommand(sender, wrapper, label, args.copyOfRange(index, args.size))
-            Logger.instance.debug("${sender.name} ran command ${wrapper.getCommand().commands.first()} with result ${result.name}.")
+            Logger.instance.debug("${sender.name} ran command ${wrapper.getCommand().commands.firstOrNull() ?: "use (blank)"} with result ${result.name}.")
 
             when (result) {
                 CommandResult.NO_PERMISSIONS -> {
@@ -52,7 +47,7 @@ abstract class CommandExecutor : TabExecutor {
                     return true
                 }
                 CommandResult.METHOD_ERROR -> {
-                    val command = if (wrapper.getCommand().subCommands.isEmpty()) wrapper.getCommand().commands.first()
+                    val command = if (wrapper.getCommand().subCommands.isEmpty()) wrapper.getCommand().commands.firstOrNull() ?: "use"
                     else wrapper.getCommand().commands.first() + "." + wrapper.getCommand().subCommands.first()
                     MessageService.sendMessage(sender, ConfigManager.instance.messageConfig.errorsConfig.notEnoughArgs,
                         mapOf("%usage%" to MessageService.format(ConfigManager.instance.messageConfig.helpConfig.getMessage(command))))
@@ -130,7 +125,7 @@ abstract class CommandExecutor : TabExecutor {
         }.onFailure { e ->
             Logger.instance.error(
                 "Произошла ошибка при попытке вызвать команду." +
-                    "\nОтправитель: ${sender.name}; Команда: ${wrapper.getCommand().commands.first()}; Аргументы: ${args.joinToString(", ")}",
+                    "\nОтправитель: ${sender.name}; Команда: ${wrapper.getCommand().commands.firstOrNull() ?: "use (blank)"}; Аргументы: ${args.joinToString(", ")}",
                 e
             )
         }
@@ -153,20 +148,21 @@ abstract class CommandExecutor : TabExecutor {
         MessageService.sendMessage(sender, ConfigManager.instance.messageConfig.helpConfig.header)
         for (wrapper in availableCommands) {
             val command = wrapper.getCommand()
-            val name = if (command.subCommands.isEmpty()) command.commands.first() else command.commands.first() + "." + command.subCommands.first()
+            val name = if (command.subCommands.isEmpty()) command.commands.firstOrNull() ?: "use" else command.commands.first() + "." + command.subCommands.first()
             MessageService.sendMessage(sender, ConfigManager.instance.messageConfig.helpConfig.getMessage(name),
                 mapOf("%alias%" to label))
         }
     }
 
-    fun getCommandWrappers(command: String, subCommand: String?): List<CommandWrapper> {
+    fun getCommandWrappers(command: String?, subCommand: String?): List<CommandWrapper> {
         val wrappers = mutableListOf<CommandWrapper>()
 
         for (wraps in commandMethods.values) {
             for (wrapper in wraps) {
                 val annotation = wrapper.getCommand()
 
-                if (!annotation.commands.contains(command)) continue
+                if (command != null && !annotation.commands.contains(command)
+                    || command == null && annotation.commands.isNotEmpty()) continue
 
                 if (annotation.subCommands.isEmpty() || annotation.subCommands.contains(subCommand)) {
                     wrappers.add(wrapper)
@@ -183,6 +179,13 @@ abstract class CommandExecutor : TabExecutor {
                 val command = function.findAnnotation<SubCommand>()!!
 
                 val wrapper = CommandWrapper(function)
+                if (command.commands.isEmpty()) {
+                    val wrappers = commandMethods.getOrDefault("use", mutableSetOf())
+                    wrappers.add(wrapper)
+
+                    commandMethods["use"] = wrappers
+                }
+
                 for (cmd in command.commands) {
                     val wrappers = commandMethods.getOrDefault(cmd, mutableSetOf())
                     wrappers.add(wrapper)
@@ -242,6 +245,7 @@ abstract class CommandExecutor : TabExecutor {
         runCatching {
             if (args.size == 1) {
                 for (cmd in commandMethods.keys) {
+                    if (cmd.equals("use", true)) continue
                     val wrapper = commandMethods[cmd].orEmpty().firstOrNull() ?: continue
                     val command = wrapper.getCommand()
 

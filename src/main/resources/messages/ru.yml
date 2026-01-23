@@ -4,6 +4,14 @@ messages:
   help:
     header: 'Помощь по аукциону:'
     help: '/%alias% help - помощь по командам.'
+    use: '/%alias% - главное меню аукционов.'
+    claims: '/%alias% claims - открыть меню предметов.'
+    myhistory: '/%alias% myhistory - открыть историю лотов.'
+    admin: '/%alias% admin - открыть админ панель.'
+    cancel: '/%alias% cancel [слот] - отменить аукцион.'
+    end: '/%alias% end [слот] - thy end is now.'
+    history: '/%alias% history [ник] - открыть историю игрока.'
+    reload: '/%alias% reload - перезагрузить плагин.'
 
   errors:
     not-enough-perms: 'У вас недостаточно прав для выполнения данной команды.'
@@ -17,6 +25,7 @@ messages:
     cant-change-lot: 'Лот уже начался, вы не можете его настраивать.'
     wrong-date: 'Вы указали не дату или она уже прошла.'
     player-not-found: 'Не удалось найти игрока с данным ником.'
+    lot-not-found: 'На данном слоте нет лота.'
 
   success:
     bid-placed: 'Вы сделали ставку %amount%.'
@@ -38,4 +47,9 @@ messages:
     auction-ending-soon: "Аукцион завершается через %time%!"
     you-were-outbid: "Вас перебили в лоте %item%! Новая ставка: %amount%"
     you-won: "Вы выиграли %item% за %price%!"
-    auction-extended: "Аукцион продлен на %seconds% сек.!"
+    auction-extended: "Аукцион продлен на %seconds% сек."
+
+  commands:
+    cancel: "Лот на слоте %slot% был отменён."
+    end: "Лот на слоте %slot% был принудительно завершён."
+    reload: "Плагин перезагружен."
