@@ -27,6 +27,10 @@ class ErrorsConfig(section: ConfigurationSection) {
     val wrongNumber = section.getString("wrong-number")!!
     val inventoryIsFull = section.getString("inventory-is-full")!!
     val claimsIsEmpty = section.getString("claims-is-empty")!!
+    val maxLots = section.getString("max-lots")!!
+    val cantChangeLot = section.getString("cant-change-lot")!!
+    val wrongDate = section.getString("wrong-date")!!
+    val playerNotFound = section.getString("player-not-found")!!
 }
 
 class SuccessConfig(section: ConfigurationSection) {
@@ -37,6 +41,8 @@ class SuccessConfig(section: ConfigurationSection) {
 
 class ScannerConfig(section: ConfigurationSection) {
     val specifyNumber = section.getString("specify-number")!!
+    val specifyDate = section.getString("specify-date")!!
+    val specifyPlayer = section.getString("specify-player")!!
 }
 
 class WarningsConfig(section: ConfigurationSection) {

@@ -152,6 +152,7 @@ class AuctionScheduler(
             lot.endTime,
             now
         )
+        manager.lotHistoryCache.add(history)
         PluginCoroutineScope.scope.launch { manager.repository.lotHistoryDao.add(history) }
     }
 

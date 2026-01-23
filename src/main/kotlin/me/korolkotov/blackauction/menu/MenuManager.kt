@@ -45,6 +45,7 @@ class MenuManager : LoadManagerInterface<MenuManager>, Listener {
         val top = event.view.topInventory.holder
         if (top is Menu) {
             if (clicked.holder is Menu) top.onClick(event)
+            else top.onClickOutside(event)
             if (!top.canDrag(event.slot)) event.isCancelled = true
         }
     }

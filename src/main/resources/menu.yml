@@ -157,6 +157,12 @@ admin-menu:
     lot:
       slots: [ 10, 13, 16, 28, 31, 34 ]
       lore:
+        - '─────────────'
+        - '💰 Начальная ставка: %start_price% ₽'
+        - '👤 Создатель: %creator%'
+        - '⏱️ Начало: %start_date%'
+        - '⏱️ Конец: %end_date%'
+        - '─────────────'
         - 'Нажмите, чтобы настроить'
     create:
       slots: [37]
@@ -179,7 +185,14 @@ admin-lot-menu:
   items:
     lot-put:
       slots: [4]
-      material: "AIR"
+      material: "GRAY_STAINED_GLASS_PANE"
+      display-name: "Информация"
+      lore:
+        - "Чтобы выбрать предмет, нажмите на него у себя"
+        - "в инвентаре."
+        - "При настройке других вещей, ваш инвентарь"
+        - "будет закрываться и вам необходимо будет"
+        - "написать что-либо в чат."
     lot-item:
       slots: [13]
     start-price:
@@ -194,10 +207,10 @@ admin-lot-menu:
       slots: [20]
       material: "COMPASS"
       display-name: "Настроить время и дату начала"
-    duration:
+    end-time:
       slots: [21]
       material: "SAND"
-      display-name: "Настроить длительность аукциона"
+      display-name: "Настроить время и дату конца"
     back:
       slots: [26]
       material: "ARROW"

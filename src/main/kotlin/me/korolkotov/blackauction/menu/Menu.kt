@@ -4,6 +4,8 @@ import me.korolkotov.blackauction.config.ConfigManager
 import me.korolkotov.blackauction.config.MenuConfig
 import me.korolkotov.blackauction.load.LoadManager
 import me.korolkotov.blackauction.menu.button.Button
+import me.korolkotov.blackauction.menu.impls.AdminHistoryMenu
+import me.korolkotov.blackauction.menu.impls.AdminMenu
 import me.korolkotov.blackauction.menu.impls.ClaimsMenu
 import me.korolkotov.blackauction.menu.impls.HistoryMenu
 import me.korolkotov.blackauction.menu.impls.MainMenu
@@ -72,6 +74,7 @@ abstract class Menu(id: String) : InventoryHolder {
     protected abstract fun initButtons(player: Player)
 
     open fun onClose(player: Player) {}
+    open fun onClickOutside(event: InventoryClickEvent) {}
 
     protected fun getButtons() = buttons.toList()
 
@@ -88,6 +91,8 @@ abstract class Menu(id: String) : InventoryHolder {
                 "main-menu" -> MainMenu()
                 "claims-menu" -> ClaimsMenu(player, 1)
                 "my-history-menu" -> HistoryMenu(player, 1)
+                "admin-menu" -> AdminMenu()
+                "admin-history-menu" -> AdminHistoryMenu(1)
                 else -> null
             }
         }

@@ -7,9 +7,9 @@ import java.util.UUID
 data class Lot(
     val id: Int,
     val slot: Int,
-    val item: ItemStack,
-    val startPrice: Double,
-    val minStep: Double,
+    var item: ItemStack,
+    var startPrice: Double,
+    var minStep: Double,
     var startTime: Instant,
     var endTime: Instant,
     var status: LotStatus,

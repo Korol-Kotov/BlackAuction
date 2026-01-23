@@ -3,9 +3,11 @@ package me.korolkotov.blackauction.auction
 import kotlinx.coroutines.launch
 import me.korolkotov.blackauction.auction.cache.AuctionCache
 import me.korolkotov.blackauction.auction.cache.ClaimCache
+import me.korolkotov.blackauction.auction.cache.LotHistoryCache
 import me.korolkotov.blackauction.auction.cache.PlayerHistoryCache
 import me.korolkotov.blackauction.auction.model.Claim
 import me.korolkotov.blackauction.auction.model.Lot
+import me.korolkotov.blackauction.auction.model.LotHistory
 import me.korolkotov.blackauction.auction.model.LotStatus
 import me.korolkotov.blackauction.auction.model.PlayerHistory
 import me.korolkotov.blackauction.config.ConfigManager
@@ -28,6 +30,7 @@ class AuctionManager : LoadManagerInterface<AuctionManager> {
     val auctionCache = AuctionCache()
     val claimsCache = ClaimCache()
     val playerHistoryCache = PlayerHistoryCache()
+    val lotHistoryCache = LotHistoryCache()
 
     lateinit var repository: AuctionRepository private set
     lateinit var scheduler: AuctionScheduler private set
@@ -49,6 +52,8 @@ class AuctionManager : LoadManagerInterface<AuctionManager> {
             repository.lotDao.findActiveOrPlanned(Clock.systemUTC().instant()).forEach { lot ->
                 auctionCache.put(lot.slot, lot)
             }
+
+            lotHistoryCache.addAll(repository.lotHistoryDao.findRecent(500))
         }
     }
 
