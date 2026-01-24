@@ -30,11 +30,11 @@ abstract class CommandExecutor : TabExecutor {
 
         val wrappers = getCommandWrappers(subCommand, args1)
         for (wrapper in wrappers) {
-            var index = 1
+            var index = if (subCommand != null) 1 else 0
 
             if (wrapper.getCommand().subCommands.isNotEmpty()) index++
 
-            val result = runCommand(sender, wrapper, label, args.copyOfRange(index, args.size))
+            val result = runCommand(sender, wrapper, args.copyOfRange(index, args.size))
             Logger.instance.debug("${sender.name} ran command ${wrapper.getCommand().commands.firstOrNull() ?: "use (blank)"} with result ${result.name}.")
 
             when (result) {
@@ -65,7 +65,7 @@ abstract class CommandExecutor : TabExecutor {
     }
 
 
-    private fun runCommand(sender: CommandSender, wrapper: CommandWrapper, label: String, args: Array<out String>): CommandResult {
+    private fun runCommand(sender: CommandSender, wrapper: CommandWrapper, args: Array<out String>): CommandResult {
         val command = wrapper.getCommand()
 
         runCatching {
@@ -104,11 +104,6 @@ abstract class CommandExecutor : TabExecutor {
                 if (requestedParams.size - 1 <= i) break
 
                 val param = requestedParams[i + 1]
-                if (param.name == "label") {
-                    params[i + 1] = label
-                    continue
-                }
-
                 val obj = verifyArgument(args[i], param.type.classifier as KClass<*>)
 
                 if (obj == null && (!param.isOptional && !param.type.isMarkedNullable)) {
@@ -133,7 +128,7 @@ abstract class CommandExecutor : TabExecutor {
         return CommandResult.COMMAND_ERROR
     }
 
-    fun sendHelpMessage(sender: CommandSender, label: String) {
+    fun sendHelpMessage(sender: CommandSender) {
         val availableCommands = mutableListOf<CommandWrapper>()
         commandMethods.values.forEach { wrappers ->
             wrappers.filter { sender.hasPermission("blackauction.${it.getCommand().permissionNode}") }
@@ -149,8 +144,7 @@ abstract class CommandExecutor : TabExecutor {
         for (wrapper in availableCommands) {
             val command = wrapper.getCommand()
             val name = if (command.subCommands.isEmpty()) command.commands.firstOrNull() ?: "use" else command.commands.first() + "." + command.subCommands.first()
-            MessageService.sendMessage(sender, ConfigManager.instance.messageConfig.helpConfig.getMessage(name),
-                mapOf("%alias%" to label))
+            MessageService.sendMessage(sender, ConfigManager.instance.messageConfig.helpConfig.getMessage(name))
         }
     }
 

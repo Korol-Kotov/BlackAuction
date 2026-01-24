@@ -1,7 +1,6 @@
 package me.korolkotov.blackauction.menu.impls
 
 import me.korolkotov.blackauction.auction.AuctionManager
-import me.korolkotov.blackauction.auction.model.Claim
 import me.korolkotov.blackauction.auction.model.PlayerHistory
 import me.korolkotov.blackauction.config.ConfigManager
 import me.korolkotov.blackauction.load.LoadManager

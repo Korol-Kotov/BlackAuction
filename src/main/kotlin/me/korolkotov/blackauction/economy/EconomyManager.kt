@@ -21,14 +21,18 @@ class EconomyManager : LoadManagerInterface<EconomyManager> {
     override fun getInstance() = this
 
     override fun initialize() {
-        val rsp = Bukkit.getServicesManager().getRegistration(Economy::class.java)
-        if (rsp == null) {
+        if (!initEconomy()) {
             Logger.instance.error("Vault dependency wasn't found, disabling plugin.")
             Bukkit.getPluginManager().disablePlugin(Main.instance)
             return
         }
+    }
 
+    private fun initEconomy(): Boolean {
+        if (!Bukkit.getPluginManager().isPluginEnabled("Vault")) return false
+        val rsp = Bukkit.getServicesManager().getRegistration(Economy::class.java) ?: return false
         economy = rsp.provider
+        return true
     }
 
     fun has(player: OfflinePlayer, amount: Double): Boolean =

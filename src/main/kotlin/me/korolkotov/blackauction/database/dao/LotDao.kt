@@ -7,6 +7,7 @@ import java.util.UUID
 
 interface LotDao {
     fun create(lot: Lot): Int
+    fun update(lot: Lot): Boolean
     fun findById(id: Int): Lot?
     fun updateStatus(id: Int, status: LotStatus)
     fun updateBid(id: Int, bid: Double, leader: UUID?)

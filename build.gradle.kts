@@ -8,25 +8,22 @@ version = "1.0"
 
 repositories {
     mavenCentral()
-    maven("https://maven.leafmc.one/snapshots/")
+    maven("https://repo.papermc.io/repository/maven-public/")
     maven("https://jitpack.io")
 }
 
 dependencies {
-    compileOnly("cn.dreeam.leaf:leaf-api:1.21.4-R0.1-SNAPSHOT")
+    compileOnly("io.papermc.paper:paper-api:1.21.4-R0.1-SNAPSHOT")
     implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8")
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.10.2")
     implementation(kotlin("reflect"))
 
     implementation("mysql:mysql-connector-java:8.0.33")
     implementation("com.zaxxer:HikariCP:6.2.1")
-    implementation("org.flywaydb:flyway-core:9.22.3")
+    implementation("org.flywaydb:flyway-core:11.10.5")
+    implementation("org.flywaydb:flyway-mysql:11.10.5")
 
-    compileOnly("com.github.MilkBowl:VaultAPI:1.7")
-}
-
-java {
-    toolchain.languageVersion.set(JavaLanguageVersion.of(21))
+    compileOnly("com.github.MilkBowl:VaultAPI:1.7.1")
 }
 
 val targetJavaVersion = 21
@@ -36,6 +33,14 @@ kotlin {
 
 tasks.build {
     dependsOn("shadowJar")
+}
+
+tasks {
+    shadowJar {
+        duplicatesStrategy = DuplicatesStrategy.INCLUDE
+        mergeServiceFiles()
+        isZip64 = true
+    }
 }
 
 tasks.processResources {

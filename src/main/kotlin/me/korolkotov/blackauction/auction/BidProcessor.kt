@@ -8,10 +8,10 @@ import me.korolkotov.blackauction.coroutine.PluginCoroutineScope
 import me.korolkotov.blackauction.economy.EconomyManager
 import me.korolkotov.blackauction.logger.Logger
 import me.korolkotov.blackauction.util.MessageService
+import me.korolkotov.blackauction.util.TimeUtil
 import me.korolkotov.blackauction.util.getName
 import org.bukkit.Bukkit
 import org.bukkit.entity.Player
-import java.time.Clock
 import java.time.temporal.ChronoUnit
 
 class BidProcessor(
@@ -22,7 +22,7 @@ class BidProcessor(
         if (lot.leader != null) {
             val leader = Bukkit.getOfflinePlayer(lot.leader!!)
             EconomyManager.instance.deposit(leader, lot.currentBid)
-            if (leader.isOnline) {
+            if (leader.isOnline && leader.uniqueId != player.uniqueId) {
                 MessageService.sendMessage(leader.player!!, ConfigManager.instance.messageConfig.notifications.youWereOutbid,
                     mapOf("%item%" to lot.item.getName(), "%amount%" to amount.toString()))
             }
@@ -34,7 +34,7 @@ class BidProcessor(
         Logger.instance.debug("New bid to ${lot.id}: ${player.name} made a bid of $amount")
         MessageService.sendMessage(player, ConfigManager.instance.messageConfig.successConfig.bidPlaced,
             mapOf("%amount%" to amount.toString()))
-        val now = Clock.systemUTC().instant()
+        val now = TimeUtil.now()
         val bid = Bid(
             0,
             lot.id,

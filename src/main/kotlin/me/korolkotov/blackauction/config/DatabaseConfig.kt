@@ -1,13 +1,11 @@
 package me.korolkotov.blackauction.config
 
 import org.bukkit.configuration.ConfigurationSection
-import org.bukkit.configuration.file.YamlConfiguration
 
-class DatabaseConfig(yaml: YamlConfiguration) {
-    val tablePrefix = yaml.getString("table-prefix")!!
-    val type = yaml.getString("type")!!
+class DatabaseConfig(section: ConfigurationSection) {
+    val type = section.getString("type")!!
 
-    val mysql = MySQLConfig(yaml.getConfigurationSection("mysql")!!)
+    val mysql = MySQLConfig(section.getConfigurationSection("mysql")!!)
 }
 
 class MySQLConfig(section: ConfigurationSection) {

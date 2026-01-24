@@ -9,18 +9,21 @@ import me.korolkotov.blackauction.menu.button.ItemButton
 import me.korolkotov.blackauction.menu.button.MenuButton
 import me.korolkotov.blackauction.menu.button.SimpleButton
 import me.korolkotov.blackauction.scanner.ScannerManager
+import me.korolkotov.blackauction.util.ItemBuilder
 import me.korolkotov.blackauction.util.MessageService
+import me.korolkotov.blackauction.util.TimeUtil
+import me.korolkotov.blackauction.util.format
 import org.bukkit.entity.Player
 import org.bukkit.event.inventory.InventoryClickEvent
 import org.bukkit.inventory.PlayerInventory
-import java.time.Clock
 import java.time.Instant
 import java.time.LocalDateTime
 import java.time.ZoneId
 import java.time.format.DateTimeFormatter
+import java.time.temporal.ChronoUnit
 
 class AdminLotMenu(
-    private val lot: Lot
+    val lot: Lot
 ) : Menu("admin-lot-menu") {
     val scanner get() = LoadManager.getInstance(ScannerManager::class.java)
 
@@ -51,7 +54,11 @@ class AdminLotMenu(
 
         val startPrice = config.getItem("start-price")
         addButton(SimpleButton(
-            { startPrice.getItem()!! },
+            {
+                val lore = MessageService.format(startPrice.getLore(),
+                    mapOf("%start_price%" to lot.startPrice.toString()))
+                ItemBuilder(startPrice.getItem()!!).lore(lore).build()
+            },
             startPrice.getSlots()
         ) { data ->
             if (lot.status != LotStatus.PLANNED) {
@@ -74,13 +81,18 @@ class AdminLotMenu(
                 }
 
                 lot.startPrice = num
+                update()
                 this.open(data.player)
             }
         })
 
         val minBetStep = config.getItem("min-bet-step")
         addButton(SimpleButton(
-            { minBetStep.getItem()!! },
+            {
+                val lore = MessageService.format(minBetStep.getLore(),
+                    mapOf("%min_bet%" to lot.minStep.toString()))
+                ItemBuilder(minBetStep.getItem()!!).lore(lore).build()
+            },
             minBetStep.getSlots()
         ) { data ->
             if (lot.status != LotStatus.PLANNED) {
@@ -103,13 +115,18 @@ class AdminLotMenu(
                 }
 
                 lot.minStep = num
+                update()
                 this.open(data.player)
             }
         })
 
         val startTime = config.getItem("start-time")
         addButton(SimpleButton(
-            { startTime.getItem()!! },
+            {
+                val lore = MessageService.format(startTime.getLore(),
+                    mapOf("%start_time%" to lot.startTime.format(ConfigManager.instance.config.auction.general.dateFormat)))
+                ItemBuilder(startTime.getItem()!!).lore(lore).build()
+            },
             startTime.getSlots()
         ) { data ->
             if (lot.status != LotStatus.PLANNED) {
@@ -126,20 +143,25 @@ class AdminLotMenu(
                 }
 
                 val date = parsePlayerDateToInstant(message)
-                val now = Clock.systemUTC().instant()
+                val now = TimeUtil.now()
                 if (date == null || date.isBefore(now)) {
                     MessageService.sendMessage(data.player, ConfigManager.instance.messageConfig.errorsConfig.wrongDate)
                     return@waitFor
                 }
 
                 lot.startTime = date
+                update()
                 this.open(data.player)
             }
         })
 
         val endTime = config.getItem("end-time")
         addButton(SimpleButton(
-            { endTime.getItem()!! },
+            {
+                val lore = MessageService.format(endTime.getLore(),
+                    mapOf("%end_time%" to lot.endTime.format(ConfigManager.instance.config.auction.general.dateFormat)))
+                ItemBuilder(endTime.getItem()!!).lore(lore).build()
+            },
             endTime.getSlots()
         ) { data ->
             if (lot.status != LotStatus.PLANNED) {
@@ -162,6 +184,7 @@ class AdminLotMenu(
                 }
 
                 lot.endTime = date
+                update()
                 this.open(data.player)
             }
         })
@@ -179,7 +202,7 @@ class AdminLotMenu(
 
     private fun parsePlayerDateToInstant(playerInput: String): Instant? {
         return runCatching {
-            val formatter = DateTimeFormatter.ofPattern("yyyy.MM.dd HH:mm")
+            val formatter = DateTimeFormatter.ofPattern(ConfigManager.instance.config.auction.general.dateFormat)
             val localDateTime = LocalDateTime.parse(playerInput, formatter)
             val moscowZone = ZoneId.of("Europe/Moscow")
             val zonedMoscow = localDateTime.atZone(moscowZone)

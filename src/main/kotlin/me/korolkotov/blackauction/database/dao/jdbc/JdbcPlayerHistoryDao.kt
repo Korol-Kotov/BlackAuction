@@ -13,13 +13,12 @@ import javax.sql.DataSource
 class JdbcPlayerHistoryDao(
     private val ds: DataSource
 ) : PlayerHistoryDao {
-
     override fun add(entry: PlayerHistory): Int =
         ds.connection.use { con ->
             val sql = """
                 INSERT INTO ba_player_history
-                (player_uuid, lot_id, item_name, final_price, won_at, claimed_at, status)
-                VALUES (?, ?, ?, ?, ?, ?, ?)
+                (player_uuid, lot_id, item_name, final_price, won_at, claimed_at)
+                VALUES (?, ?, ?, ?, ?, ?)
             """
             con.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS).use { ps ->
                 ps.setString(1, entry.playerUniqueId.toString())
@@ -28,7 +27,6 @@ class JdbcPlayerHistoryDao(
                 ps.setDouble(4, entry.finalPrice)
                 ps.setInstant(5, entry.wonAt)
                 ps.setTimestamp(6, entry.claimedAt?.let { Timestamp.from(it) })
-                ps.setString(7, if (entry.claimedAt != null) "CLAIMED" else "PENDING")
 
                 ps.executeUpdate()
                 ps.generatedKeys.use {

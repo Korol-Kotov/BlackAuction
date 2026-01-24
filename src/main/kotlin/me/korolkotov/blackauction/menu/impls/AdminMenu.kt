@@ -12,6 +12,7 @@ import me.korolkotov.blackauction.util.ItemBuilder
 import me.korolkotov.blackauction.util.MessageService
 import me.korolkotov.blackauction.util.PlayerUtil
 import me.korolkotov.blackauction.util.format
+import org.bukkit.Material
 import org.bukkit.entity.Player
 import org.bukkit.inventory.ItemStack
 
@@ -71,6 +72,7 @@ class AdminMenu : Menu("admin-menu") {
     }
 
     private fun getLotItem(lot: Lot): ItemStack {
+        if (lot.item.type.isEmpty) return ItemStack(Material.AIR)
         val builder = ItemBuilder(lot.item.clone())
         val replacements = mapOf(
             "%start_price%" to lot.startPrice.toString(),

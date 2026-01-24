@@ -6,6 +6,7 @@ import org.bukkit.inventory.ItemStack
 import java.sql.PreparedStatement
 import java.sql.ResultSet
 import java.sql.Timestamp
+import java.time.Clock
 import java.time.Duration
 import java.time.Instant
 import java.time.LocalTime
@@ -23,16 +24,16 @@ fun ItemStack.getName(): String {
 }
 
 fun Instant.format(pattern: String): String {
-    val formatter = DateTimeFormatter.ofPattern(pattern).withZone(ZoneId.of("UTC"))
+    val formatter = DateTimeFormatter.ofPattern(pattern).withZone(ZoneId.of("Europe/Moscow"))
     return formatter.format(this)
 }
 
 fun Instant.diffFormat(other: Instant, pattern: String): String {
-    val diff = Duration.between(this, other)
-    val hours = diff.toHours().toInt()
-    val minutes = (diff.toMinutes() % 60).toInt()
+    val diff = Duration.between(this, other).abs()
+    val hours = diff.toHours()
+    val minutes = diff.toMinutes() % 60
+    val seconds = diff.seconds % 60
 
-    val time = LocalTime.of(hours, minutes)
-    val formatter = DateTimeFormatter.ofPattern(pattern)
-    return formatter.format(time)
+    val time = LocalTime.of(hours.toInt(), minutes.toInt(), seconds.toInt())
+    return DateTimeFormatter.ofPattern(pattern).format(time)
 }

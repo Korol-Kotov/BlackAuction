@@ -23,8 +23,8 @@ class JdbcLotDao(
             """
             con.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS).use { ps ->
                 var index = 1
-                ps.setString(index++, ItemSerializer.serialize(lot.item))
                 ps.setInt(index++, lot.slot)
+                ps.setString(index++, ItemSerializer.serialize(lot.item))
                 ps.setDouble(index++, lot.startPrice)
                 ps.setDouble(index++, lot.minStep)
                 ps.setInstant(index++, lot.startTime)
@@ -42,6 +42,44 @@ class JdbcLotDao(
                 }
             }
         }
+
+    override fun update(lot: Lot) =
+        ds.connection.use { con ->
+            val sql = """
+            UPDATE ba_lots
+            SET
+                slot = ?,
+                item_data = ?,
+                start_price = ?,
+                min_bid_step = ?,
+                start_time = ?,
+                end_time = ?,
+                status = ?,
+                created_by = ?,
+                created_at = ?,
+                current_price = ?,
+                current_winner_uuid = ?
+            WHERE id = ?
+        """
+            con.prepareStatement(sql).use { ps ->
+                var index = 1
+                ps.setInt(index++, lot.slot)
+                ps.setString(index++, ItemSerializer.serialize(lot.item))
+                ps.setDouble(index++, lot.startPrice)
+                ps.setDouble(index++, lot.minStep)
+                ps.setInstant(index++, lot.startTime)
+                ps.setInstant(index++, lot.endTime)
+                ps.setInt(index++, lot.status.id)
+                ps.setString(index++, lot.createdBy.toString())
+                ps.setInstant(index++, lot.createdAt)
+                ps.setDouble(index++, lot.currentBid)
+                ps.setString(index++, lot.leader?.toString())
+                ps.setInt(index, lot.id)
+
+                ps.executeUpdate() > 0
+            }
+        }
+
 
     override fun findById(id: Int): Lot? =
         ds.connection.use { con ->
@@ -99,7 +137,6 @@ class JdbcLotDao(
                 "SELECT * FROM ba_lots WHERE status IN (0, 1) AND end_time > ?"
             ).use { ps ->
                 ps.setInstant(1, now)
-                ps.setInstant(2, now)
                 ps.executeQuery().use { rs ->
                     buildList {
                         while (rs.next()) {

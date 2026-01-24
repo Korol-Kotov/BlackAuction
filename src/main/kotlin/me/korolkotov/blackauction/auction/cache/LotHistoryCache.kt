@@ -12,6 +12,7 @@ class LotHistoryCache {
     }
 
     fun add(lotHistory: LotHistory) {
+        if (cache.any { it.id == lotHistory.id }) return
         cache.add(lotHistory)
     }
 

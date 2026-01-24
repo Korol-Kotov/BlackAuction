@@ -8,7 +8,6 @@ import me.korolkotov.blackauction.auction.cache.LotHistoryCache
 import me.korolkotov.blackauction.auction.cache.PlayerHistoryCache
 import me.korolkotov.blackauction.auction.model.Claim
 import me.korolkotov.blackauction.auction.model.Lot
-import me.korolkotov.blackauction.auction.model.LotHistory
 import me.korolkotov.blackauction.auction.model.LotStatus
 import me.korolkotov.blackauction.auction.model.PlayerHistory
 import me.korolkotov.blackauction.config.ConfigManager
@@ -19,11 +18,10 @@ import me.korolkotov.blackauction.database.repository.AuctionRepository
 import me.korolkotov.blackauction.load.LoadManager
 import me.korolkotov.blackauction.load.LoadManagerInterface
 import me.korolkotov.blackauction.logger.Logger
-import org.bukkit.Bukkit
+import me.korolkotov.blackauction.util.TimeUtil
 import org.bukkit.Material
 import org.bukkit.entity.Player
 import org.bukkit.inventory.ItemStack
-import java.time.Clock
 import java.time.temporal.ChronoUnit
 
 class AuctionManager : LoadManagerInterface<AuctionManager> {
@@ -53,7 +51,7 @@ class AuctionManager : LoadManagerInterface<AuctionManager> {
         bidProcessor = BidProcessor(this)
 
         PluginCoroutineScope.scope.launch {
-            repository.lotDao.findActiveOrPlanned(Clock.systemUTC().instant()).forEach { lot ->
+            repository.lotDao.findActiveOrPlanned(TimeUtil.now()).forEach { lot ->
                 auctionCache.put(lot.slot, lot)
             }
             withContext(BukkitDispatcher.MAIN) {
@@ -72,13 +70,13 @@ class AuctionManager : LoadManagerInterface<AuctionManager> {
 
     fun createLot(creator: Player): Lot {
         val config = ConfigManager.instance.config.auction
-        val now = Clock.systemUTC().instant()
+        val now = TimeUtil.now()
         val start = now.plus(1, ChronoUnit.DAYS)
         val end = start.plus(1, ChronoUnit.HOURS)
         val lot = Lot(
             0,
             auctionCache.nextSlot(),
-            ItemStack(Material.AIR),
+            ItemStack(Material.STONE),
             config.bidding.defaultStartPrice,
             config.bidding.defaultBidStep,
             start,
@@ -91,7 +89,10 @@ class AuctionManager : LoadManagerInterface<AuctionManager> {
         )
         auctionCache.put(lot.slot, lot)
         Logger.instance.debug("Created a new lot. (creator: ${creator.name}, slot: ${lot.slot})")
-        PluginCoroutineScope.scope.launch { repository.lotDao.create(lot) }
+        PluginCoroutineScope.scope.launch {
+            val id = repository.lotDao.create(lot)
+            lot.id = id
+        }
         return lot
     }
 

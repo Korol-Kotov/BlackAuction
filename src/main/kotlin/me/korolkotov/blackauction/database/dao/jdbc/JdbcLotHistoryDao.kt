@@ -1,39 +1,36 @@
 package me.korolkotov.blackauction.database.dao.jdbc
 
-import me.korolkotov.blackauction.auction.model.Lot
 import me.korolkotov.blackauction.auction.model.LotHistory
-import me.korolkotov.blackauction.auction.model.LotStatus
 import me.korolkotov.blackauction.database.dao.LotHistoryDao
 import me.korolkotov.blackauction.util.ItemSerializer
 import me.korolkotov.blackauction.util.getInstant
+import me.korolkotov.blackauction.util.getName
 import me.korolkotov.blackauction.util.setInstant
 import java.sql.Statement
-import java.time.Instant
-import java.util.UUID
+import java.util.*
 import javax.sql.DataSource
-import kotlin.use
 
 class JdbcLotHistoryDao(
     private val ds: DataSource
 ) : LotHistoryDao {
-
     override fun add(history: LotHistory) =
         ds.connection.use { con ->
             val sql = """
                 INSERT INTO ba_history 
-                (lot_id, item_data, winner_uuid, winner_name, final_price, commission_taken, start_time, end_time, completed_at)
-                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+                (lot_id, item_name, item_data, winner_uuid, winner_name, final_price, commission_taken, start_time, end_time, completed_at)
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
             """
             con.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS).use { ps ->
                 ps.setInt(1, history.lotId)
-                ps.setString(2, ItemSerializer.serialize(history.item))
-                ps.setString(3, history.winnerUniqueId?.toString())
-                ps.setString(4, history.winnerName)
-                ps.setDouble(5, history.finalPrice ?: 0.0)
-                ps.setDouble(6, history.commissionTaken)
-                ps.setInstant(7, history.startTime)
-                ps.setInstant(8, history.endTime)
-                ps.setInstant(9, history.completedAt)
+                ps.setString(2, history.item.getName())
+                ps.setString(3, ItemSerializer.serialize(history.item))
+                ps.setString(4, history.winnerUniqueId?.toString())
+                ps.setString(5, history.winnerName)
+                ps.setDouble(6, history.finalPrice ?: 0.0)
+                ps.setDouble(7, history.commissionTaken)
+                ps.setInstant(8, history.startTime)
+                ps.setInstant(9, history.endTime)
+                ps.setInstant(10, history.completedAt)
 
                 ps.executeUpdate()
                 ps.generatedKeys.use {

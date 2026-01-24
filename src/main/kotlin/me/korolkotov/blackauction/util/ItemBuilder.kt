@@ -22,7 +22,7 @@ import java.util.UUID
 class ItemBuilder(
     private val item: ItemStack
 ) {
-    private val meta: ItemMeta = if (item.hasItemMeta()) item.itemMeta!! else Bukkit.getItemFactory().getItemMeta(item.type)
+    private val meta: ItemMeta? = if (item.hasItemMeta()) item.itemMeta else Bukkit.getItemFactory().getItemMeta(item.type)
 
     fun amount(value: Int) = apply {
         item.amount = value.coerceIn(1, item.maxStackSize)
@@ -30,34 +30,34 @@ class ItemBuilder(
 
     fun name(value: String?) = apply {
         if (value != null)
-            meta.displayName(value.asComponent())
+            meta?.displayName(value.asComponent())
     }
 
     fun lore(value: List<String>?) = apply {
         if (!value.isNullOrEmpty())
-            meta.lore(value.map { it.asComponent() })
+            meta?.lore(value.map { it.asComponent() })
     }
 
     fun customModelData(value: Int?) = apply {
         if (value != null && value >= 0)
-            meta.setCustomModelData(value)
+            meta?.setCustomModelData(value)
     }
 
     fun unbreakable(value: Boolean) = apply {
-        meta.isUnbreakable = value
+        meta?.isUnbreakable = value
     }
 
     fun enchants(map: Map<String, Int>?) = apply {
         map?.forEach { (key, level) ->
             val enchant = Enchantment.getByKey(NamespacedKey.minecraft(key.lowercase())) ?: return@forEach
-            meta.addEnchant(enchant, level.coerceAtLeast(1), true)
+            meta?.addEnchant(enchant, level.coerceAtLeast(1), true)
         }
     }
 
     fun itemFlags(flags: List<String>?) = apply {
         flags?.forEach {
             runCatching { ItemFlag.valueOf(it.uppercase()) }
-                .onSuccess { flag -> meta.addItemFlags(flag) }
+                .onSuccess { flag -> meta?.addItemFlags(flag) }
         }
     }
 
@@ -105,13 +105,13 @@ class ItemBuilder(
         section?.getKeys(false)?.forEach { key ->
             val namespacedKey = NamespacedKey.minecraft(key)
             when (val value = section.get(key)) {
-                is String -> meta.persistentDataContainer.set(
+                is String -> meta?.persistentDataContainer?.set(
                     namespacedKey,
                     PersistentDataType.STRING,
                     value
                 )
 
-                is Int -> meta.persistentDataContainer.set(
+                is Int -> meta?.persistentDataContainer?.set(
                     namespacedKey,
                     PersistentDataType.INTEGER,
                     value
@@ -121,7 +121,7 @@ class ItemBuilder(
     }
 
     fun build(): ItemStack {
-        item.itemMeta = meta
+        if (meta != null) item.itemMeta = meta
         return item
     }
 

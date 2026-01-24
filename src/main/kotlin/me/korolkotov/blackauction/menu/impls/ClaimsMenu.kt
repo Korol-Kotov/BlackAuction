@@ -11,11 +11,11 @@ import me.korolkotov.blackauction.menu.button.MenuButton
 import me.korolkotov.blackauction.menu.button.SimpleButton
 import me.korolkotov.blackauction.util.ItemBuilder
 import me.korolkotov.blackauction.util.MessageService
+import me.korolkotov.blackauction.util.TimeUtil
 import me.korolkotov.blackauction.util.format
 import org.bukkit.Material
 import org.bukkit.entity.Player
 import org.bukkit.inventory.ItemStack
-import java.time.Clock
 
 class ClaimsMenu(
     private val player: Player,
@@ -116,9 +116,10 @@ class ClaimsMenu(
     private fun removeClaim(claim: Claim) {
         val am = auctionManager
         am.claimsCache.removeClaim(player.uniqueId, claim)
+        am.playerHistoryCache.setClaimed(player.uniqueId, claim)
         PluginCoroutineScope.scope.launch {
             am.repository.claimDao.delete(claim.id)
-            am.repository.playerHistoryDao.markClaimed(claim.lotId, Clock.systemUTC().instant())
+            am.repository.playerHistoryDao.markClaimed(claim.lotId, TimeUtil.now())
         }
     }
 

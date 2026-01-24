@@ -1,5 +1,4 @@
 database:
-  table-prefix: "ba_"
   type: "mysql" # Возможные значения: mysql
 
   # MySQL настройки (используются только при type: mysql)
@@ -8,7 +7,7 @@ database:
     port: "3306"
     database: "minecraft"
     user: "root"
-    password: "MySql!2026Bot#"
+    password: "123"
 
     connection-properties:
       useSSL: false

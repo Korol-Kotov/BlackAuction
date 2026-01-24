@@ -5,7 +5,7 @@ import java.time.Instant
 import java.util.UUID
 
 data class LotHistory(
-    val id: Int,
+    var id: Int,
     val lotId: Int,
     val item: ItemStack,
     val winnerUniqueId: UUID?,

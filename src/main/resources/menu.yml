@@ -8,7 +8,7 @@ main-menu:
       material: "BLACK_STAINED_GLASS_PANE"
       display-name: " "
     inactive-lot:
-      material: "GRAY_STAINED_GLASS_PANE"
+      material: "WHITE_STAINED_GLASS_PANE"
       display-name: "&7&lНеактивный лот"
     lot:
       slots: [10, 13, 16, 28, 31, 34]
@@ -199,18 +199,26 @@ admin-lot-menu:
       slots: [18]
       material: "GOLD_INGOT"
       display-name: "Настроить стартовую цену"
+      lore:
+        - 'Текущее значение: %start_price%'
     min-bet-step:
       slots: [19]
       material: "GOLD_NUGGET"
       display-name: "Настроить минимальный шаг"
+      lore:
+        - 'Текущее значение: %min_bet%'
     start-time:
       slots: [20]
       material: "COMPASS"
       display-name: "Настроить время и дату начала"
+      lore:
+        - 'Текущее значение: %start_time%'
     end-time:
       slots: [21]
       material: "SAND"
       display-name: "Настроить время и дату конца"
+      lore:
+        - 'Текущее значение: %end_time%'
     back:
       slots: [26]
       material: "ARROW"

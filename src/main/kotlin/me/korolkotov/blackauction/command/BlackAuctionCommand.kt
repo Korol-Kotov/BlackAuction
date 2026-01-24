@@ -3,13 +3,10 @@ package me.korolkotov.blackauction.command
 import me.korolkotov.blackauction.Main
 import me.korolkotov.blackauction.annotations.SubCommand
 import me.korolkotov.blackauction.auction.AuctionManager
+import me.korolkotov.blackauction.auction.model.LotStatus
 import me.korolkotov.blackauction.config.ConfigManager
 import me.korolkotov.blackauction.load.LoadManager
-import me.korolkotov.blackauction.menu.impls.AdminHistoryMenu
-import me.korolkotov.blackauction.menu.impls.AdminMenu
-import me.korolkotov.blackauction.menu.impls.ClaimsMenu
-import me.korolkotov.blackauction.menu.impls.HistoryMenu
-import me.korolkotov.blackauction.menu.impls.MainMenu
+import me.korolkotov.blackauction.menu.impls.*
 import me.korolkotov.blackauction.util.MessageService
 import org.bukkit.OfflinePlayer
 import org.bukkit.command.CommandSender
@@ -19,12 +16,18 @@ class BlackAuctionCommand : CommandExecutor() {
     val auctionManager get() = LoadManager.getInstance(AuctionManager::class.java)
     
     @SubCommand(commands = ["help"], permissionNode = "help")
-    fun help(sender: CommandSender, label: String) {
-        sendHelpMessage(sender, label)
+    fun help(sender: CommandSender) {
+        sendHelpMessage(sender)
     }
 
     @SubCommand(permissionNode = "use")
     fun use(player: Player) {
+        val active = auctionManager.auctionCache.getLots().filter { it.status == LotStatus.RUNNING }
+        if (active.isEmpty()) {
+            MessageService.sendMessage(player, ConfigManager.instance.messageConfig.warningsConfig.noActiveLots)
+            return
+        }
+
         val menu = MainMenu()
         menu.open(player)
     }
@@ -57,7 +60,8 @@ class BlackAuctionCommand : CommandExecutor() {
         }
 
         am.scheduler.cancel(lot)
-        MessageService.sendMessage(player, ConfigManager.instance.messageConfig.commands.cancel)
+        MessageService.sendMessage(player, ConfigManager.instance.messageConfig.commands.cancel,
+            mapOf("%slot%" to slot.toString()))
     }
 
     @SubCommand(commands = ["end"], permissionNode = "admin.end")
@@ -70,7 +74,8 @@ class BlackAuctionCommand : CommandExecutor() {
         }
 
         am.scheduler.end(lot)
-        MessageService.sendMessage(player, ConfigManager.instance.messageConfig.commands.end)
+        MessageService.sendMessage(player, ConfigManager.instance.messageConfig.commands.end,
+            mapOf("%slot%" to slot.toString()))
     }
 
     @SubCommand(commands = ["history"], permissionNode = "admin.history")

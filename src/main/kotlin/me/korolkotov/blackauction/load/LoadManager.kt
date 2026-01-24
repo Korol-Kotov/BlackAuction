@@ -3,13 +3,11 @@ package me.korolkotov.blackauction.load
 import me.korolkotov.blackauction.auction.AuctionManager
 import me.korolkotov.blackauction.command.CommandManager
 import me.korolkotov.blackauction.config.ConfigManager
-import me.korolkotov.blackauction.coroutine.PluginCoroutineScope
 import me.korolkotov.blackauction.database.DatabaseManager
 import me.korolkotov.blackauction.economy.EconomyManager
 import me.korolkotov.blackauction.logger.LoggerManager
 import me.korolkotov.blackauction.menu.MenuManager
 import me.korolkotov.blackauction.scanner.ScannerManager
-import me.korolkotov.blackauction.util.MessageService
 
 class LoadManager {
     companion object {

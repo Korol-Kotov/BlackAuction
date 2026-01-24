@@ -81,6 +81,9 @@ CREATE TABLE ba_claims (
     won_at TIMESTAMP NOT NULL,
     added_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
 
+    FOREIGN KEY (lot_id)
+        REFERENCES ba_lots(id),
+
     UNIQUE KEY uniq_claim_player_lot (player_uuid, lot_id),
 
     INDEX idx_ba_claims_player (player_uuid),

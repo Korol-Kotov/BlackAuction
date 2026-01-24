@@ -12,13 +12,13 @@ import java.util.Date
 import java.util.Locale
 
 class LoggerManager : LoadManagerInterface<LoggerManager> {
-    private lateinit var logger: Logger
     private lateinit var folder: File
+
+    private val logger = Logger()
 
     override fun getInstance() = this
 
     override fun initialize() {
-        logger = Logger()
         folder = File(ConfigManager.instance.dataFolder, "logs")
         if (!folder.exists()) folder.mkdirs()
 

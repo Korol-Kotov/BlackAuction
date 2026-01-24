@@ -5,7 +5,7 @@ import java.time.Instant
 import java.util.UUID
 
 data class Lot(
-    val id: Int,
+    var id: Int,
     val slot: Int,
     var item: ItemStack,
     var startPrice: Double,

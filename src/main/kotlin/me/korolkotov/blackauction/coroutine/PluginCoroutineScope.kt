@@ -6,7 +6,7 @@ import kotlinx.coroutines.cancel
 
 object PluginCoroutineScope {
     val scope = CoroutineScope(
-        SupervisorJob() + DatabaseDispatcher.IO
+        SupervisorJob()
     )
 
     fun shutdown() {

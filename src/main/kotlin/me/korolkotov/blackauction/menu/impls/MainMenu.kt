@@ -10,10 +10,7 @@ import me.korolkotov.blackauction.menu.button.CloseButton
 import me.korolkotov.blackauction.menu.button.ItemButton
 import me.korolkotov.blackauction.menu.button.MenuButton
 import me.korolkotov.blackauction.menu.button.SimpleButton
-import me.korolkotov.blackauction.util.ItemBuilder
-import me.korolkotov.blackauction.util.MessageService
-import me.korolkotov.blackauction.util.PlayerUtil
-import me.korolkotov.blackauction.util.diffFormat
+import me.korolkotov.blackauction.util.*
 import org.bukkit.entity.Player
 import org.bukkit.inventory.ItemStack
 
@@ -38,23 +35,21 @@ class MainMenu : Menu("main-menu") {
             close.getSlots()
         ))
 
-        for (id in 0..<ConfigManager.instance.config.auction.general.maxLots) {
-            val slot = config.getItem("lot").getSlots()[id]
-            addButton(SimpleButton(
-                { slot ->
-                    val lotSlot = config.getItem("lot").getSlots().indexOf(slot)
-                    val lot = auctionManager.auctionCache.get(lotSlot)
-                    if (lot != null) getLotItem(lot) else getInactiveLotItem()
-                },
-                listOf(slot)
-            ) { data ->
-                val lotSlot = config.getItem("lot").getSlots().indexOf(data.slot)
-                val lot = auctionManager.auctionCache.get(lotSlot) ?: return@SimpleButton
-                if (lot.status != LotStatus.RUNNING) return@SimpleButton
-                val lotMenu = LotMenu(lot)
-                lotMenu.open(data.player)
-            })
-        }
+        val lot = config.getItem("lot")
+        addButton(SimpleButton(
+            { slot ->
+                val lotSlot = lot.getSlots().indexOf(slot)
+                val lot = auctionManager.auctionCache.get(lotSlot)
+                if (lot != null && lot.status == LotStatus.RUNNING) getLotItem(lot) else getInactiveLotItem()
+            },
+            lot.getSlots()
+        ) { data ->
+            val lotSlot = lot.getSlots().indexOf(data.slot)
+            val lot = auctionManager.auctionCache.get(lotSlot) ?: return@SimpleButton
+            if (lot.status != LotStatus.RUNNING) return@SimpleButton
+            val lotMenu = LotMenu(lot)
+            lotMenu.open(data.player)
+        })
 
         val filler = config.getItem("filler")
         if (!filler.section.getBoolean("enabled")) return
@@ -68,7 +63,7 @@ class MainMenu : Menu("main-menu") {
         val replacements = mapOf(
             "%start_price%" to lot.startPrice.toString(),
             "%leader%" to leader,
-            "%time%" to lot.endTime.diffFormat(lot.startTime, ConfigManager.instance.config.auction.general.timeFormat)
+            "%time%" to lot.endTime.diffFormat(TimeUtil.now(), ConfigManager.instance.config.auction.general.timeFormat)
         )
         val builder = ItemBuilder(lot.item.clone())
         val lore = MessageService.format(config.getItem("lot").getLore(), replacements)

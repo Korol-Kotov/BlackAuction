@@ -40,7 +40,8 @@ class DatabaseManager : LoadManagerInterface<DatabaseManager> {
                         "&characterEncoding=${mysql.connectionProperties.characterEncoding}" +
                         "&cachePrepStmts=${mysql.connectionProperties.cachePrepStmts}" +
                         "&prepStmtCacheSize=${mysql.connectionProperties.prepStmtCacheSize}" +
-                        "&prepStmtCacheSqlLimit=${mysql.connectionProperties.prepStmtCacheSqlLimit}"
+                        "&prepStmtCacheSqlLimit=${mysql.connectionProperties.prepStmtCacheSqlLimit}" +
+                        "&serverTimezone=UTC"
 
             username = mysql.user
             password = mysql.password
@@ -66,6 +67,8 @@ class DatabaseManager : LoadManagerInterface<DatabaseManager> {
         lotDao = JdbcLotDao(dataSource)
         lotHistoryDao = JdbcLotHistoryDao(dataSource)
         playerHistoryDao = JdbcPlayerHistoryDao(dataSource)
+
+        auctionRepository = AuctionRepository(bidDao, claimDao, lotDao, lotHistoryDao, playerHistoryDao)
     }
 
     override fun terminate() {

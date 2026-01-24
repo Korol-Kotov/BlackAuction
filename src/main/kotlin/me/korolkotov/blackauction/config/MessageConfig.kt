@@ -50,6 +50,7 @@ class ScannerConfig(section: ConfigurationSection) {
 class WarningsConfig(section: ConfigurationSection) {
     val notEnoughMoney = section.getString("not-enough-money")!!
     val notMinBid = section.getString("not-min-bid")!!
+    val noActiveLots = section.getString("no-active-lots")!!
 }
 
 class NotificationsConfig(section: ConfigurationSection) {

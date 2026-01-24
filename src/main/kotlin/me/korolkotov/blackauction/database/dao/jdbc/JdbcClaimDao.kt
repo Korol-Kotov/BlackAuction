@@ -17,6 +17,11 @@ class JdbcClaimDao(
             val sql = """
                 INSERT INTO ba_claims (player_uuid, lot_id, item_data, price_paid, won_at, added_at)
                 VALUES (?, ?, ?, ?, ?, ?)
+                ON DUPLICATE KEY UPDATE
+                    item_data = VALUES(item_data),
+                    price_paid = VALUES(price_paid),
+                    won_at = VALUES(won_at),
+                    added_at = VALUES(added_at)
             """
             con.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS).use { ps ->
                 ps.setString(1, claim.playerUniqueId.toString())

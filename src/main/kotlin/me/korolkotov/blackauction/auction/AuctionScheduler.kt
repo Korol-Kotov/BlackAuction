@@ -2,22 +2,21 @@ package me.korolkotov.blackauction.auction
 
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
-import me.korolkotov.blackauction.auction.model.Claim
-import me.korolkotov.blackauction.auction.model.Lot
-import me.korolkotov.blackauction.auction.model.LotHistory
-import me.korolkotov.blackauction.auction.model.LotStatus
-import me.korolkotov.blackauction.auction.model.PlayerHistory
+import me.korolkotov.blackauction.auction.model.*
 import me.korolkotov.blackauction.config.ConfigManager
 import me.korolkotov.blackauction.coroutine.PluginCoroutineScope
 import me.korolkotov.blackauction.economy.CommissionCalculator
 import me.korolkotov.blackauction.economy.EconomyManager
 import me.korolkotov.blackauction.logger.Logger
+import me.korolkotov.blackauction.menu.impls.AdminLotMenu
+import me.korolkotov.blackauction.menu.impls.LotMenu
 import me.korolkotov.blackauction.util.MessageService
 import me.korolkotov.blackauction.util.PlayerUtil
+import me.korolkotov.blackauction.util.TimeUtil
 import me.korolkotov.blackauction.util.getName
 import org.bukkit.Bukkit
-import java.time.Clock
 import java.time.temporal.ChronoUnit
+import kotlin.math.abs
 
 class AuctionScheduler(
     private val manager: AuctionManager
@@ -27,18 +26,22 @@ class AuctionScheduler(
     fun startScheduler() {
         PluginCoroutineScope.scope.launch {
             while (true) {
-                val now = Clock.systemUTC().instant()
+                val now = TimeUtil.now()
                 manager.auctionCache.getLots().forEach { lot ->
                     when (lot.status) {
                         LotStatus.PLANNED -> {
                             val warnBeforeStart = ConfigManager.instance.config.auction.notifications.warnBeforeStart
                             val isStarted = lot.startTime.isBefore(now)
                             if (isStarted) {
+                                if (lot.item.type.isEmpty) {
+                                    cancel(lot)
+                                    return@forEach
+                                }
                                 notified.remove(lot)
                                 run(lot)
                                 Logger.instance.debug("Lot ${lot.id} (slot ${lot.slot}) has just started")
                             } else {
-                                val remaining = ChronoUnit.SECONDS.between(now, lot.startTime).toInt()
+                                val remaining = abs(ChronoUnit.SECONDS.between(now, lot.startTime).toInt())
                                 val list = notified.getOrDefault(lot, mutableListOf())
                                 if (remaining in warnBeforeStart && remaining !in list) {
                                     list.add(remaining)
@@ -83,14 +86,18 @@ class AuctionScheduler(
     fun run(lot: Lot) {
         lot.changeStatus(LotStatus.RUNNING)
         MessageService.broadcast(ConfigManager.instance.messageConfig.notifications.auctionStarted)
+        PluginCoroutineScope.scope.launch {
+            manager.repository.lotDao.update(lot)
+        }
     }
 
     fun end(lot: Lot) {
         lot.changeStatus(LotStatus.FINISHED)
         manager.auctionCache.remove(lot.slot)
+        closeInventories(lot)
         val finalPrice: Double?
         var commissionTaken = 0.0
-        val now = Clock.systemUTC().instant()
+        val now = TimeUtil.now()
         if (lot.leader != null) {
             val winner = lot.leader!!
             val percent = ConfigManager.instance.config.auction.economy.commissionPercent
@@ -114,7 +121,11 @@ class AuctionScheduler(
                 finalPrice,
                 now, now
             )
-            PluginCoroutineScope.scope.launch { manager.repository.claimDao.add(claim) }
+            PluginCoroutineScope.scope.launch {
+                val id = manager.repository.claimDao.add(claim)
+                claim.id = id
+                manager.claimsCache.addClaim(winner, claim)
+            }
             val playerHistory = PlayerHistory(
                 0,
                 winner,
@@ -124,7 +135,11 @@ class AuctionScheduler(
                 now,
                 null
             )
-            PluginCoroutineScope.scope.launch { manager.repository.playerHistoryDao.add(playerHistory) }
+            PluginCoroutineScope.scope.launch {
+                val id = manager.repository.playerHistoryDao.add(playerHistory)
+                playerHistory.id = id
+                manager.playerHistoryCache.addEntry(winner, playerHistory)
+            }
             val player = Bukkit.getPlayer(winner)
             if (player != null) MessageService.sendMessage(player, ConfigManager.instance.messageConfig.notifications.youWon,
                 mapOf("%item%" to lot.item.getName(), "%price%" to finalPrice.toString()))
@@ -138,7 +153,11 @@ class AuctionScheduler(
                 0.0,
                 now, now
             )
-            PluginCoroutineScope.scope.launch { manager.repository.claimDao.add(claim) }
+            PluginCoroutineScope.scope.launch {
+                val id = manager.repository.claimDao.add(claim)
+                claim.id = id
+                manager.claimsCache.addClaim(admin, claim)
+            }
             finalPrice = null
         }
 
@@ -155,30 +174,56 @@ class AuctionScheduler(
             lot.endTime,
             now
         )
-        manager.lotHistoryCache.add(history)
-        PluginCoroutineScope.scope.launch { manager.repository.lotHistoryDao.add(history) }
+        PluginCoroutineScope.scope.launch {
+            val id = manager.repository.lotHistoryDao.add(history)
+            history.id = id
+            manager.lotHistoryCache.add(history)
+        }
         Logger.instance.debug("Lot ${lot.id} has been finished.")
     }
 
     fun cancel(lot: Lot) {
         lot.changeStatus(LotStatus.CANCELLED)
         manager.auctionCache.remove(lot.slot)
+        closeInventories(lot)
         if (lot.leader != null) {
             val leader = Bukkit.getOfflinePlayer(lot.leader!!)
             EconomyManager.instance.deposit(leader, lot.currentBid)
         }
-        val now = Clock.systemUTC().instant()
-        val admin = lot.createdBy
-        val claim = Claim(
-            0,
-            admin,
-            lot.id,
-            lot.item.clone(),
-            0.0,
-            now, now
-        )
-        PluginCoroutineScope.scope.launch { manager.repository.claimDao.add(claim) }
+        if (!lot.item.type.isEmpty) {
+            val now = TimeUtil.now()
+            val admin = lot.createdBy
+            val claim = Claim(
+                0,
+                admin,
+                lot.id,
+                lot.item.clone(),
+                0.0,
+                now, now
+            )
+            PluginCoroutineScope.scope.launch {
+                val id = manager.repository.claimDao.add(claim)
+                claim.id = id
+                manager.claimsCache.addClaim(admin, claim)
+            }
+        }
         Logger.instance.debug("Lot ${lot.id} has been cancelled.")
+    }
+
+    private fun closeInventories(lot: Lot) {
+        Bukkit.getOnlinePlayers().forEach { player ->
+            val openInv = player.openInventory.topInventory.holder ?: return@forEach
+            when (openInv) {
+                is LotMenu -> {
+                    if (openInv.lot.id == lot.id)
+                        player.closeInventory()
+                }
+                is AdminLotMenu -> {
+                    if (openInv.lot.id == lot.id)
+                        player.closeInventory()
+                }
+            }
+        }
     }
 
     private fun Lot.changeStatus(new: LotStatus) {

@@ -5,7 +5,7 @@ import java.time.Instant
 import java.util.UUID
 
 data class Claim(
-    val id: Int,
+    var id: Int,
     val playerUniqueId: UUID,
     val lotId: Int,
     val item: ItemStack,

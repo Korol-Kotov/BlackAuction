@@ -19,7 +19,7 @@ import org.bukkit.inventory.Inventory
 import org.bukkit.inventory.ItemStack
 
 class LotMenu(
-    private val lot: Lot
+    val lot: Lot
 ) : Menu("lot-menu") {
     val auctionManager get() = LoadManager.getInstance(AuctionManager::class.java)
     val scanner get() = LoadManager.getInstance(ScannerManager::class.java)
@@ -163,7 +163,7 @@ class LotMenu(
             "%start_price%" to lot.startPrice.toString(),
             "%min_step%" to lot.minStep.toString(),
             "%leader%" to leader,
-            "%time_left%" to lot.endTime.diffFormat(lot.startTime, ConfigManager.instance.config.auction.general.timeFormat)
+            "%time_left%" to lot.endTime.diffFormat(TimeUtil.now(), ConfigManager.instance.config.auction.general.timeFormat)
         )
         val item = config.getItem("info")
         val builder = ItemBuilder(item.getItem()!!.clone())

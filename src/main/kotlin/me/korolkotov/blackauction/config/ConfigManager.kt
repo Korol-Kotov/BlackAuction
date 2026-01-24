@@ -29,7 +29,7 @@ class ConfigManager : LoadManagerInterface<ConfigManager> {
         this.config = GeneralConfig(config)
 
         val database = loadOrCreate("database.yml")
-        databaseConfig = DatabaseConfig(database)
+        databaseConfig = DatabaseConfig(database.getConfigurationSection("database")!!)
 
         val languageFile = loadLanguageFile(this.config.plugin.language)
         messageConfig = MessageConfig(languageFile.getConfigurationSection("messages")!!)

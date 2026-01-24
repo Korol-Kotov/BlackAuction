@@ -3,15 +3,15 @@ messages:
 
   help:
     header: 'Помощь по аукциону:'
-    help: '/%alias% help - помощь по командам.'
-    use: '/%alias% - главное меню аукционов.'
-    claims: '/%alias% claims - открыть меню предметов.'
-    myhistory: '/%alias% myhistory - открыть историю лотов.'
-    admin: '/%alias% admin - открыть админ панель.'
-    cancel: '/%alias% cancel [слот] - отменить аукцион.'
-    end: '/%alias% end [слот] - thy end is now.'
-    history: '/%alias% history [ник] - открыть историю игрока.'
-    reload: '/%alias% reload - перезагрузить плагин.'
+    help: '/blackauction help - помощь по командам.'
+    use: '/blackauction - главное меню аукционов.'
+    claims: '/blackauction claims - открыть меню предметов.'
+    myhistory: '/blackauction myhistory - открыть историю лотов.'
+    admin: '/blackauction admin - открыть админ панель.'
+    cancel: '/blackauction cancel [слот] - отменить аукцион.'
+    end: '/blackauction end [слот] - thy end is now.'
+    history: '/blackauction history [ник] - открыть историю игрока.'
+    reload: '/blackauction reload - перезагрузить плагин.'
 
   errors:
     not-enough-perms: 'У вас недостаточно прав для выполнения данной команды.'
@@ -34,12 +34,13 @@ messages:
 
   scanner:
     specify-number: 'Введите число в чат.'
-    specify-date: 'Введите дату в чат. Пример: 2026.01.20 10:00'
+    specify-date: 'Введите дату в чат. Пример: 20.01.2026 10:00'
     specify-player: 'Введите ник игрока в чат.'
 
   warnings:
     not-enough-money: 'У вас недостаточно средст на балансе.'
     not-min-bid: 'Минимальная возможная сумма на текущий момент: %need%.'
+    no-active-lots: 'В данный момент нет активных лотов.'
 
   notifications:
     auction-starting: "Черный аукцион начинается через %time%!"
