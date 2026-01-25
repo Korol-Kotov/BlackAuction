@@ -37,22 +37,25 @@ class AdminMenu : Menu("admin-menu") {
             close.getSlots()
         ))
 
-        for (id in 0..<ConfigManager.instance.config.auction.general.maxLots) {
-            val slot = config.getItem("lot").getSlots()[id]
-            addButton(SimpleButton(
-                { slot ->
-                    val lotSlot = config.getItem("lot").getSlots().indexOf(slot)
-                    val lot = auctionManager.auctionCache.get(lotSlot)
-                    if (lot != null) getLotItem(lot) else getInactiveLotItem()
-                },
-                listOf(slot)
-            ) { data ->
-                val lotSlot = config.getItem("lot").getSlots().indexOf(data.slot)
-                val lot = auctionManager.auctionCache.get(lotSlot) ?: return@SimpleButton
+        val lot = config.getItem("lot")
+        addButton(SimpleButton(
+            { slot ->
+                val lotSlot = lot.getSlots().indexOf(slot)
+                val lot = auctionManager.auctionCache.get(lotSlot)
+                if (lot != null) getLotItem(lot) else getInactiveLotItem()
+            },
+            lot.getSlots()
+        ) { data ->
+            val lotSlot = lot.getSlots().indexOf(data.slot)
+            val lot = auctionManager.auctionCache.get(lotSlot) ?: return@SimpleButton
+            if (data.clickType.isLeftClick) {
                 val menu = AdminLotMenu(lot)
                 menu.open(data.player)
-            })
-        }
+            } else if (data.clickType.isRightClick) {
+                val menu = AdminLotCancelMenu(lot)
+                menu.open(data.player)
+            }
+        })
 
         val create = config.getItem("create")
         addButton(SimpleButton(

@@ -53,7 +53,7 @@ class BlackAuctionCommand : CommandExecutor() {
     @SubCommand(commands = ["cancel"], permissionNode = "admin.cancel")
     fun cancel(player: Player, slot: Int) {
         val am = auctionManager
-        val lot = am.auctionCache.get(slot)
+        val lot = am.auctionCache.get(slot - 1)
         if (lot == null) {
             MessageService.sendMessage(player, ConfigManager.instance.messageConfig.errorsConfig.lotNotFound)
             return
@@ -67,7 +67,7 @@ class BlackAuctionCommand : CommandExecutor() {
     @SubCommand(commands = ["end"], permissionNode = "admin.end")
     fun end(player: Player, slot: Int) {
         val am = auctionManager
-        val lot = am.auctionCache.get(slot)
+        val lot = am.auctionCache.get(slot - 1)
         if (lot == null) {
             MessageService.sendMessage(player, ConfigManager.instance.messageConfig.errorsConfig.lotNotFound)
             return

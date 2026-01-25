@@ -6,6 +6,7 @@ class DatabaseConfig(section: ConfigurationSection) {
     val type = section.getString("type")!!
 
     val mysql = MySQLConfig(section.getConfigurationSection("mysql")!!)
+    val sqlite = SQLiteConfig(section.getConfigurationSection("sqlite")!!)
 }
 
 class MySQLConfig(section: ConfigurationSection) {
@@ -17,6 +18,10 @@ class MySQLConfig(section: ConfigurationSection) {
 
     val connectionProperties = ConnectionPropertiesConfig(section.getConfigurationSection("connection-properties")!!)
     val pool = PoolConfig(section.getConfigurationSection("pool")!!)
+}
+
+class SQLiteConfig(section: ConfigurationSection) {
+    val file = section.getString("file")!!
 }
 
 class ConnectionPropertiesConfig(section: ConfigurationSection) {

@@ -70,7 +70,7 @@ class LotMenu(
             ) { data ->
                 if (lot.status != LotStatus.RUNNING) { data.player.closeInventory(); return@SimpleButton }
                 val amount = if (lot.currentBid <= 0) lot.startPrice else lot.currentBid + lot.minStep
-                if (!EconomyManager.instance.has(data.player, amount)) {
+                if (!EconomyManager.instance.has(data.player, if (lot.leader == data.player.uniqueId) lot.minStep else amount)) {
                     MessageService.sendMessage(
                         data.player,
                         ConfigManager.instance.messageConfig.warningsConfig.notEnoughMoney
@@ -105,10 +105,11 @@ class LotMenu(
                         return@waitFor
                     }
                     val minNeed = if (lot.currentBid <= 0) lot.startPrice else lot.currentBid + lot.minStep
-                    if (amount < minNeed) {
+                    if (amount < (if (lot.leader == data.player.uniqueId) lot.minStep else minNeed)) {
+                        val need = if (lot.leader == data.player.uniqueId) lot.minStep else minNeed
                         MessageService.sendMessage(
                             data.player, ConfigManager.instance.messageConfig.warningsConfig.notMinBid,
-                            mapOf("%need%" to minNeed.toString())
+                            mapOf("%need%" to need.toString())
                         )
                         return@waitFor
                     }
@@ -121,7 +122,7 @@ class LotMenu(
                     }
 
                     val am = auctionManager
-                    am.bidProcessor.processBid(lot, data.player, amount)
+                    am.bidProcessor.processBid(lot, data.player, if (lot.leader == data.player.uniqueId) amount + lot.currentBid else amount)
                     update()
                 }
             })
@@ -143,7 +144,7 @@ class LotMenu(
                 val bid = bids[quickBid.getSlots().indexOf(data.slot)]
                 if (bid == null || lot.minStep > bid) return@SimpleButton
                 val amount = if (lot.currentBid <= 0) lot.startPrice + bid else lot.currentBid + bid
-                if (!EconomyManager.instance.has(data.player, amount)) {
+                if (!EconomyManager.instance.has(data.player, if (lot.leader == data.player.uniqueId) bid.toDouble() else amount)) {
                     MessageService.sendMessage(
                         data.player,
                         ConfigManager.instance.messageConfig.warningsConfig.notEnoughMoney

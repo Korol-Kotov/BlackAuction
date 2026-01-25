@@ -20,6 +20,7 @@ dependencies {
 
     implementation("mysql:mysql-connector-java:8.0.33")
     implementation("com.zaxxer:HikariCP:6.2.1")
+    implementation("org.xerial:sqlite-jdbc:3.30.1")
     implementation("org.flywaydb:flyway-core:11.10.5")
     implementation("org.flywaydb:flyway-mysql:11.10.5")
 

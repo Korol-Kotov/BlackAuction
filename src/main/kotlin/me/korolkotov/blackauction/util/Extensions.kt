@@ -30,10 +30,10 @@ fun Instant.format(pattern: String): String {
 
 fun Instant.diffFormat(other: Instant, pattern: String): String {
     val diff = Duration.between(this, other).abs()
-    val hours = diff.toHours()
-    val minutes = diff.toMinutes() % 60
-    val seconds = diff.seconds % 60
+    val hours = diff.toHours().toInt()
+    val minutes = (diff.toMinutes() % 60).toInt()
+    val seconds = (diff.seconds % 60).toInt()
 
-    val time = LocalTime.of(hours.toInt(), minutes.toInt(), seconds.toInt())
+    val time = LocalTime.of(if (hours == 24) 0 else hours, minutes, seconds)
     return DateTimeFormatter.ofPattern(pattern).format(time)
 }

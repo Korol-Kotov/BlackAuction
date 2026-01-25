@@ -163,7 +163,8 @@ admin-menu:
         - '⏱️ Начало: %start_date%'
         - '⏱️ Конец: %end_date%'
         - '─────────────'
-        - 'Нажмите, чтобы настроить'
+        - 'Нажмите ЛКМ, чтобы настроить'
+        - 'Нажмите ПКМ, чтобы отменить'
     create:
       slots: [37]
       material: "CHEST"
@@ -224,6 +225,26 @@ admin-lot-menu:
       material: "ARROW"
       display-name: "Назад"
       menu: "admin-menu"
+
+admin-lot-cancel-menu:
+  title: "Отменить лот"
+  size: 27
+
+  items:
+    lot:
+      slots: [13]
+    agree:
+      slots: [20]
+      material: "GREEN_WOOL"
+      display-name: "Отменить лот"
+      lore:
+        - 'Нажмите, чтобы согласиться на отмену лота'
+    cancel:
+      slots: [24]
+      material: "RED_WOOL"
+      display-name: "Не отменять"
+      lore:
+        - 'Нажмите, чтобы отказаться от отмены лота'
 
 admin-history-menu:
   title: "История лотов"

@@ -1,6 +1,7 @@
 package me.korolkotov.blackauction.database.dao.jdbc
 
 import me.korolkotov.blackauction.auction.model.Claim
+import me.korolkotov.blackauction.config.ConfigManager
 import me.korolkotov.blackauction.database.dao.ClaimDao
 import me.korolkotov.blackauction.util.ItemSerializer
 import me.korolkotov.blackauction.util.getInstant
@@ -14,7 +15,19 @@ class JdbcClaimDao(
 ) : ClaimDao {
     override fun add(claim: Claim): Int =
         ds.connection.use { con ->
-            val sql = """
+            val type = ConfigManager.instance.databaseConfig.type
+            val sql = if (type.equals("sqlite", true)) {
+                """
+                INSERT INTO ba_claims (player_uuid, lot_id, item_data, price_paid, won_at, added_at)
+                VALUES (?, ?, ?, ?, ?, ?)
+                ON CONFLICT(player_uuid, lot_id) DO UPDATE SET
+                    item_data = excluded.item_data,
+                    price_paid = excluded.price_paid,
+                    won_at = excluded.won_at,
+                    added_at = excluded.added_at
+                """
+            } else {
+                """
                 INSERT INTO ba_claims (player_uuid, lot_id, item_data, price_paid, won_at, added_at)
                 VALUES (?, ?, ?, ?, ?, ?)
                 ON DUPLICATE KEY UPDATE
@@ -22,7 +35,8 @@ class JdbcClaimDao(
                     price_paid = VALUES(price_paid),
                     won_at = VALUES(won_at),
                     added_at = VALUES(added_at)
-            """
+                """
+            }
             con.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS).use { ps ->
                 ps.setString(1, claim.playerUniqueId.toString())
                 ps.setInt(2, claim.lotId)

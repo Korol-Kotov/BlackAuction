@@ -40,7 +40,7 @@ class ScannerManager : LoadManagerInterface<ScannerManager>, Listener {
 
         event.isCancelled = true
         scans.forEach { scan ->
-            scan.runnable(message)
+            TaskService.run { scan.runnable(message) }
             this.scans.remove(scan)
         }
     }

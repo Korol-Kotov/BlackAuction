@@ -31,29 +31,46 @@ class DatabaseManager : LoadManagerInterface<DatabaseManager> {
     override fun getInstance() = this
 
     override fun initialize() {
-        val mysql = ConfigManager.instance.databaseConfig.mysql
-        val hikari = HikariConfig().apply {
-            jdbcUrl =
-                "jdbc:mysql://${mysql.host}:${mysql.port}/${mysql.database}" +
-                        "?useSSL=${mysql.connectionProperties.useSSL}" +
-                        "&autoReconnect=${mysql.connectionProperties.autoReconnect}" +
-                        "&characterEncoding=${mysql.connectionProperties.characterEncoding}" +
-                        "&cachePrepStmts=${mysql.connectionProperties.cachePrepStmts}" +
-                        "&prepStmtCacheSize=${mysql.connectionProperties.prepStmtCacheSize}" +
-                        "&prepStmtCacheSqlLimit=${mysql.connectionProperties.prepStmtCacheSqlLimit}" +
-                        "&serverTimezone=UTC"
+        val hikari = if (ConfigManager.instance.databaseConfig.type.equals("mysql", true)) {
+            val mysql = ConfigManager.instance.databaseConfig.mysql
+            HikariConfig().apply {
+                jdbcUrl =
+                    "jdbc:mysql://${mysql.host}:${mysql.port}/${mysql.database}" +
+                            "?useSSL=${mysql.connectionProperties.useSSL}" +
+                            "&autoReconnect=${mysql.connectionProperties.autoReconnect}" +
+                            "&characterEncoding=${mysql.connectionProperties.characterEncoding}" +
+                            "&cachePrepStmts=${mysql.connectionProperties.cachePrepStmts}" +
+                            "&prepStmtCacheSize=${mysql.connectionProperties.prepStmtCacheSize}" +
+                            "&prepStmtCacheSqlLimit=${mysql.connectionProperties.prepStmtCacheSqlLimit}" +
+                            "&serverTimezone=UTC"
 
-            username = mysql.user
-            password = mysql.password
+                username = mysql.user
+                password = mysql.password
 
-            maximumPoolSize = mysql.pool.poolSize
-            minimumIdle = mysql.pool.minimumIdle
+                maximumPoolSize = mysql.pool.poolSize
+                minimumIdle = mysql.pool.minimumIdle
 
-            idleTimeout = mysql.pool.idleTimeout
-            connectionTimeout = mysql.pool.connectionTimeout
-            maxLifetime = mysql.pool.maxLifetime
+                idleTimeout = mysql.pool.idleTimeout
+                connectionTimeout = mysql.pool.connectionTimeout
+                maxLifetime = mysql.pool.maxLifetime
 
-            driverClassName = "com.mysql.cj.jdbc.Driver"
+                driverClassName = "com.mysql.cj.jdbc.Driver"
+            }
+        } else {
+            val sqlite = ConfigManager.instance.databaseConfig.sqlite
+            HikariConfig().apply {
+                jdbcUrl = "jdbc:sqlite:${sqlite.file}"
+
+                maximumPoolSize = 1
+                minimumIdle = 1
+                idleTimeout = 0
+                maxLifetime = 0
+                connectionTimeout = 30_000
+
+                isAutoCommit = true
+
+                driverClassName = "org.sqlite.JDBC"
+            }
         }
 
         dataSource = HikariDataSource(hikari)

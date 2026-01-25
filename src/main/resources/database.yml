@@ -1,5 +1,5 @@
 database:
-  type: "mysql" # Возможные значения: mysql
+  type: "mysql" # Возможные значения: mysql, sqlite
 
   # MySQL настройки (используются только при type: mysql)
   mysql:
@@ -23,3 +23,6 @@ database:
       idle-timeout: 600000
       connection-timeout: 30000
       max-lifetime: 1800000
+
+  sqlite:
+    file: "database.db"
