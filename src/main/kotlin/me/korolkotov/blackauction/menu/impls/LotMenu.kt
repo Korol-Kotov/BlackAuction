@@ -25,7 +25,7 @@ class LotMenu(
     val scanner get() = LoadManager.getInstance(ScannerManager::class.java)
 
     override fun createInventory(): Inventory {
-        val itemName = lot.item.getName()
+        val itemName = "&r" + lot.item.getName()
         val title = MessageService.format(config.title, mapOf("%item_name%" to itemName))
         return Bukkit.createInventory(this, config.size, title.asComponent())
     }

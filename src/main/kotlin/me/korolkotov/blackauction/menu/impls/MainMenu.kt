@@ -61,7 +61,7 @@ class MainMenu : Menu("main-menu") {
     private fun getLotItem(lot: Lot): ItemStack {
         val leader = if (lot.leader == null) "Нет ставок" else PlayerUtil.resolvePlayerName(lot.leader!!)
         val replacements = mapOf(
-            "%start_price%" to lot.startPrice.toString(),
+            "%current_bid%" to lot.currentBid.toString(),
             "%leader%" to leader,
             "%time%" to lot.endTime.diffFormat(TimeUtil.now(), ConfigManager.instance.config.auction.general.timeFormat)
         )

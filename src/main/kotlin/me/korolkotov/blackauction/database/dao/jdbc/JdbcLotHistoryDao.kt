@@ -22,7 +22,7 @@ class JdbcLotHistoryDao(
             """
             con.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS).use { ps ->
                 ps.setInt(1, history.lotId)
-                ps.setString(2, history.item.getName())
+                ps.setString(2, history.item.getName().take(255))
                 ps.setString(3, ItemSerializer.serialize(history.item))
                 ps.setString(4, history.winnerUniqueId?.toString())
                 ps.setString(5, history.winnerName)

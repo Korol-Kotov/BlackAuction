@@ -23,7 +23,7 @@ class JdbcPlayerHistoryDao(
             con.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS).use { ps ->
                 ps.setString(1, entry.playerUniqueId.toString())
                 ps.setInt(2, entry.lotId)
-                ps.setString(3, entry.item)
+                ps.setString(3, entry.item.take(255))
                 ps.setDouble(4, entry.finalPrice)
                 ps.setInstant(5, entry.wonAt)
                 ps.setTimestamp(6, entry.claimedAt?.let { Timestamp.from(it) })
