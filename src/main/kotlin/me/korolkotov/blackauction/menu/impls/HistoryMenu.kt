@@ -3,6 +3,7 @@ package me.korolkotov.blackauction.menu.impls
 import me.korolkotov.blackauction.auction.AuctionManager
 import me.korolkotov.blackauction.auction.model.PlayerHistory
 import me.korolkotov.blackauction.config.ConfigManager
+import me.korolkotov.blackauction.economy.EconomyManager
 import me.korolkotov.blackauction.load.LoadManager
 import me.korolkotov.blackauction.menu.Menu
 import me.korolkotov.blackauction.menu.button.MenuButton
@@ -77,7 +78,7 @@ class HistoryMenu(
         val builder = ItemBuilder(ItemStack(Material.PAPER))
         val replacements = mapOf(
             "%date%" to playerHistory.wonAt.format(ConfigManager.instance.config.auction.general.dateFormat),
-            "%final_price%" to playerHistory.finalPrice.toString(),
+            "%final_price%" to EconomyManager.instance.format(playerHistory.economy, playerHistory.finalPrice),
             "%status%" to if (playerHistory.claimedAt != null) "Получен" else "Не получен"
         )
         val lore = MessageService.format(historyItem.getLore(), replacements)

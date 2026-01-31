@@ -13,6 +13,11 @@ auction:
     extend-by-seconds: 15
     max-extensions: 5
   economy:
+    symbols:
+      vault: '⛏'
+      coins-engine: '🔱'
+    coins-engine-currency: "coins"
+
     commission-percent: 10.0
     fixed-commission: 0.0
     commission-destination: TREASURY

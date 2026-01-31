@@ -1,5 +1,6 @@
 package me.korolkotov.blackauction.auction.model
 
+import me.korolkotov.blackauction.economy.EconomyType
 import org.bukkit.inventory.ItemStack
 import java.time.Instant
 import java.util.UUID
@@ -8,6 +9,7 @@ data class Lot(
     var id: Int,
     val slot: Int,
     var item: ItemStack,
+    var economy: EconomyType,
     var startPrice: Double,
     var minStep: Double,
     var startTime: Instant,

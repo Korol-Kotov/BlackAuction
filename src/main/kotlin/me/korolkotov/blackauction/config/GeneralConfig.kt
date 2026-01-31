@@ -35,10 +35,18 @@ class AuctionGeneralConfig(section: ConfigurationSection) {
 }
 
 class AuctionEconomyConfig(section: ConfigurationSection) {
+    val symbols = AuctionEconomySymbolsConfig(section.getConfigurationSection("symbols")!!)
+    val coinsEngineCurrency = section.getString("coins-engine-currency")!!
+
     val commissionPercent = section.getDouble("commission-percent")
     val fixedCommission = section.getDouble("fixed-commission")
     val commissionDestination = section.getString("commission-destination")!!
     val treasuryAccount = section.getString("treasury-account")!!
+}
+
+class AuctionEconomySymbolsConfig(section: ConfigurationSection) {
+    val vault = section.getString("vault")!!
+    val coinsEngine = section.getString("coins-engine")!!
 }
 
 class AuctionBiddingConfig(section: ConfigurationSection) {

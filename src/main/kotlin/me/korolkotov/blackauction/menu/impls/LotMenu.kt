@@ -62,7 +62,7 @@ class LotMenu(
                     ItemBuilder(bidMin.getItem()!!).name(
                         MessageService.format(
                             name,
-                            mapOf("%min_step%" to lot.minStep.toString())
+                            mapOf("%min_step%" to EconomyManager.instance.format(lot.economy, lot.minStep))
                         )
                     ).build()
                 },
@@ -70,7 +70,7 @@ class LotMenu(
             ) { data ->
                 if (lot.status != LotStatus.RUNNING) { data.player.closeInventory(); return@SimpleButton }
                 val amount = if (lot.currentBid <= 0) lot.startPrice else lot.currentBid + lot.minStep
-                if (!EconomyManager.instance.has(data.player, if (lot.leader == data.player.uniqueId) lot.minStep else amount)) {
+                if (!EconomyManager.instance.has(lot.economy, data.player, if (lot.leader == data.player.uniqueId) lot.minStep else amount)) {
                     MessageService.sendMessage(
                         data.player,
                         ConfigManager.instance.messageConfig.warningsConfig.notEnoughMoney
@@ -109,11 +109,11 @@ class LotMenu(
                         val need = if (lot.leader == data.player.uniqueId) lot.minStep else minNeed
                         MessageService.sendMessage(
                             data.player, ConfigManager.instance.messageConfig.warningsConfig.notMinBid,
-                            mapOf("%need%" to need.toString())
+                            mapOf("%need%" to EconomyManager.instance.format(lot.economy, need))
                         )
                         return@waitFor
                     }
-                    if (!EconomyManager.instance.has(data.player, amount)) {
+                    if (!EconomyManager.instance.has(lot.economy, data.player, amount)) {
                         MessageService.sendMessage(
                             data.player,
                             ConfigManager.instance.messageConfig.warningsConfig.notEnoughMoney
@@ -134,8 +134,10 @@ class LotMenu(
                 { slot ->
                     val bid = bids[quickBid.getSlots().indexOf(slot)]
                     if (bid == null || lot.minStep > bid) return@SimpleButton ItemStack(Material.AIR)
-                    val name = MessageService.format(quickBid.getItem()!!.getName(), mapOf("%bid%" to bid.toString()))
-                    val lore = MessageService.format(quickBid.getLore(), mapOf("%bid%" to bid.toString()))
+                    val name = MessageService.format(quickBid.getItem()!!.getName(),
+                        mapOf("%bid%" to EconomyManager.instance.format(lot.economy, bid.toDouble())))
+                    val lore = MessageService.format(quickBid.getLore(),
+                        mapOf("%bid%" to EconomyManager.instance.format(lot.economy, bid.toDouble())))
                     ItemBuilder(quickBid.getItem()!!).name(name).lore(lore).build()
                 },
                 quickBid.getSlots()
@@ -144,7 +146,7 @@ class LotMenu(
                 val bid = bids[quickBid.getSlots().indexOf(data.slot)]
                 if (bid == null || lot.minStep > bid) return@SimpleButton
                 val amount = if (lot.currentBid <= 0) lot.startPrice + bid else lot.currentBid + bid
-                if (!EconomyManager.instance.has(data.player, if (lot.leader == data.player.uniqueId) bid.toDouble() else amount)) {
+                if (!EconomyManager.instance.has(lot.economy, data.player, if (lot.leader == data.player.uniqueId) bid.toDouble() else amount)) {
                     MessageService.sendMessage(
                         data.player,
                         ConfigManager.instance.messageConfig.warningsConfig.notEnoughMoney
@@ -160,9 +162,9 @@ class LotMenu(
     private fun getInfoItem(): ItemStack {
         val leader = if (lot.leader == null) "Нет ставок" else PlayerUtil.resolvePlayerName(lot.leader!!)
         val replacements = mapOf(
-            "%current_bid%" to if (lot.currentBid > 0) lot.currentBid.toString() else "Нет ставок",
-            "%start_price%" to lot.startPrice.toString(),
-            "%min_step%" to lot.minStep.toString(),
+            "%current_bid%" to if (lot.currentBid > 0) EconomyManager.instance.format(lot.economy, lot.currentBid) else "Нет ставок",
+            "%start_price%" to EconomyManager.instance.format(lot.economy, lot.startPrice),
+            "%min_step%" to EconomyManager.instance.format(lot.economy, lot.minStep),
             "%leader%" to leader,
             "%time_left%" to lot.endTime.diffFormat(TimeUtil.now(), ConfigManager.instance.config.auction.general.timeFormat)
         )

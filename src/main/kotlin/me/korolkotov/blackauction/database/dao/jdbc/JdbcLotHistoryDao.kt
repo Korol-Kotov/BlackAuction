@@ -2,6 +2,7 @@ package me.korolkotov.blackauction.database.dao.jdbc
 
 import me.korolkotov.blackauction.auction.model.LotHistory
 import me.korolkotov.blackauction.database.dao.LotHistoryDao
+import me.korolkotov.blackauction.economy.EconomyType
 import me.korolkotov.blackauction.util.ItemSerializer
 import me.korolkotov.blackauction.util.getInstant
 import me.korolkotov.blackauction.util.getName
@@ -17,20 +18,22 @@ class JdbcLotHistoryDao(
         ds.connection.use { con ->
             val sql = """
                 INSERT INTO ba_history 
-                (lot_id, item_name, item_data, winner_uuid, winner_name, final_price, commission_taken, start_time, end_time, completed_at)
-                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+                (lot_id, item_name, item_data, winner_uuid, winner_name, economy, final_price, commission_taken, start_time, end_time, completed_at)
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
             """
             con.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS).use { ps ->
-                ps.setInt(1, history.lotId)
-                ps.setString(2, history.item.getName().take(255))
-                ps.setString(3, ItemSerializer.serialize(history.item))
-                ps.setString(4, history.winnerUniqueId?.toString())
-                ps.setString(5, history.winnerName)
-                ps.setDouble(6, history.finalPrice ?: 0.0)
-                ps.setDouble(7, history.commissionTaken)
-                ps.setInstant(8, history.startTime)
-                ps.setInstant(9, history.endTime)
-                ps.setInstant(10, history.completedAt)
+                var index = 1
+                ps.setInt(index++, history.lotId)
+                ps.setString(index++, history.item.getName().take(255))
+                ps.setString(index++, ItemSerializer.serialize(history.item))
+                ps.setString(index++, history.winnerUniqueId?.toString())
+                ps.setString(index++, history.winnerName)
+                ps.setString(index++, history.economy.name)
+                ps.setDouble(index++, history.finalPrice ?: 0.0)
+                ps.setDouble(index++, history.commissionTaken)
+                ps.setInstant(index++, history.startTime)
+                ps.setInstant(index++, history.endTime)
+                ps.setInstant(index, history.completedAt)
 
                 ps.executeUpdate()
                 ps.generatedKeys.use {
@@ -56,6 +59,7 @@ class JdbcLotHistoryDao(
                                     ItemSerializer.deserialize(rs.getString("item_data")),
                                     rs.getString("winner_uuid")?.let(UUID::fromString),
                                     rs.getString("winner_name"),
+                                    EconomyType.entries.first { it.name.equals(rs.getString("economy"), true) },
                                     rs.getDouble("final_price").takeIf { !rs.wasNull() },
                                     rs.getDouble("commission_taken"),
                                     rs.getInstant("start_time"),
@@ -85,6 +89,7 @@ class JdbcLotHistoryDao(
                                     ItemSerializer.deserialize(rs.getString("item_data")),
                                     rs.getString("winner_uuid")?.let(UUID::fromString),
                                     rs.getString("winner_name"),
+                                    EconomyType.entries.first { it.name.equals(rs.getString("economy"), true) },
                                     rs.getDouble("final_price").takeIf { !rs.wasNull() },
                                     rs.getDouble("commission_taken"),
                                     rs.getInstant("start_time"),

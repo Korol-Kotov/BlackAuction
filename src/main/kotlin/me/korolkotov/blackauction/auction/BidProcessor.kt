@@ -21,19 +21,19 @@ class BidProcessor(
         if (lot.currentBid >= amount) return
         if (lot.leader != null) {
             val leader = Bukkit.getOfflinePlayer(lot.leader!!)
-            EconomyManager.instance.deposit(leader, lot.currentBid)
+            EconomyManager.instance.deposit(lot.economy, leader, lot.currentBid)
             if (leader.isOnline && leader.uniqueId != player.uniqueId) {
                 MessageService.sendMessage(leader.player!!, ConfigManager.instance.messageConfig.notifications.youWereOutbid,
-                    mapOf("%item%" to lot.item.getName(), "%amount%" to amount.toString()))
+                    mapOf("%item%" to lot.item.getName(), "%amount%" to EconomyManager.instance.format(lot.economy, amount)))
             }
         }
 
         lot.leader = player.uniqueId
         lot.currentBid = amount
-        EconomyManager.instance.withdraw(player, amount)
+        EconomyManager.instance.withdraw(lot.economy, player, amount)
         Logger.instance.debug("New bid to ${lot.id} (slot: ${lot.slot}): ${player.name} made a bid of $amount")
         MessageService.sendMessage(player, ConfigManager.instance.messageConfig.successConfig.bidPlaced,
-            mapOf("%amount%" to amount.toString()))
+            mapOf("%amount%" to EconomyManager.instance.format(lot.economy, amount)))
         val now = TimeUtil.now()
         val bid = Bid(
             0,

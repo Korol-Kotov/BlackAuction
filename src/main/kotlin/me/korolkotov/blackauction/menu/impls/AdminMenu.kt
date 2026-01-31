@@ -3,6 +3,7 @@ package me.korolkotov.blackauction.menu.impls
 import me.korolkotov.blackauction.auction.AuctionManager
 import me.korolkotov.blackauction.auction.model.Lot
 import me.korolkotov.blackauction.config.ConfigManager
+import me.korolkotov.blackauction.economy.EconomyManager
 import me.korolkotov.blackauction.load.LoadManager
 import me.korolkotov.blackauction.menu.Menu
 import me.korolkotov.blackauction.menu.button.CloseButton
@@ -78,7 +79,7 @@ class AdminMenu : Menu("admin-menu") {
         if (lot.item.type.isEmpty) return ItemStack(Material.AIR)
         val builder = ItemBuilder(lot.item.clone())
         val replacements = mapOf(
-            "%start_price%" to lot.startPrice.toString(),
+            "%start_price%" to EconomyManager.instance.format(lot.economy, lot.startPrice),
             "%creator%" to PlayerUtil.resolvePlayerName(lot.createdBy),
             "%start_date%" to lot.startTime.format(ConfigManager.instance.config.auction.general.dateFormat),
             "%end_date%" to lot.endTime.format(ConfigManager.instance.config.auction.general.dateFormat)

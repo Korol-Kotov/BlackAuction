@@ -18,11 +18,12 @@ class JdbcBidDao(
                 VALUES (?, ?, ?, ?, ?)
             """
             con.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS).use { ps ->
-                ps.setInt(1, bid.lotId)
-                ps.setString(2, bid.playerUniqueId.toString())
-                ps.setString(3, bid.playerName)
-                ps.setDouble(4, bid.amount)
-                ps.setInstant(5, bid.bidTime)
+                var index = 1
+                ps.setInt(index++, bid.lotId)
+                ps.setString(index++, bid.playerUniqueId.toString())
+                ps.setString(index++, bid.playerName)
+                ps.setDouble(index++, bid.amount)
+                ps.setInstant(index, bid.bidTime)
                 ps.executeUpdate()
 
                 ps.generatedKeys.use {

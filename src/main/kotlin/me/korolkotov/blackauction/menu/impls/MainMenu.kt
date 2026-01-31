@@ -4,6 +4,7 @@ import me.korolkotov.blackauction.auction.AuctionManager
 import me.korolkotov.blackauction.auction.model.Lot
 import me.korolkotov.blackauction.auction.model.LotStatus
 import me.korolkotov.blackauction.config.ConfigManager
+import me.korolkotov.blackauction.economy.EconomyManager
 import me.korolkotov.blackauction.load.LoadManager
 import me.korolkotov.blackauction.menu.Menu
 import me.korolkotov.blackauction.menu.button.CloseButton
@@ -61,7 +62,7 @@ class MainMenu : Menu("main-menu") {
     private fun getLotItem(lot: Lot): ItemStack {
         val leader = if (lot.leader == null) "Нет ставок" else PlayerUtil.resolvePlayerName(lot.leader!!)
         val replacements = mapOf(
-            "%current_bid%" to lot.currentBid.toString(),
+            "%current_bid%" to EconomyManager.instance.format(lot.economy, lot.currentBid),
             "%leader%" to leader,
             "%time%" to lot.endTime.diffFormat(TimeUtil.now(), ConfigManager.instance.config.auction.general.timeFormat)
         )

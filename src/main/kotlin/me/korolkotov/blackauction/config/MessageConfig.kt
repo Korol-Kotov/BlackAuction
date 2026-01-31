@@ -33,6 +33,9 @@ class ErrorsConfig(section: ConfigurationSection) {
     val wrongDate = section.getString("wrong-date")!!
     val playerNotFound = section.getString("player-not-found")!!
     val lotNotFound = section.getString("lot-not-found")!!
+    val wrongEconomyType = section.getString("wrong-economy-type")!!
+    val alreadyEconomyType = section.getString("already-economy-type")!!
+    val economyTypeNotRegistered = section.getString("economy-type-not-registered")!!
 }
 
 class SuccessConfig(section: ConfigurationSection) {
@@ -45,6 +48,7 @@ class ScannerConfig(section: ConfigurationSection) {
     val specifyNumber = section.getString("specify-number")!!
     val specifyDate = section.getString("specify-date")!!
     val specifyPlayer = section.getString("specify-player")!!
+    val specifyEconomyType = section.getString("specify-economy-type")!!
 }
 
 class WarningsConfig(section: ConfigurationSection) {

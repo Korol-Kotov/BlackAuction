@@ -10,6 +10,7 @@ repositories {
     mavenCentral()
     maven("https://repo.papermc.io/repository/maven-public/")
     maven("https://jitpack.io")
+    maven("https://repo.nightexpressdev.com/releases")
 }
 
 dependencies {
@@ -25,6 +26,7 @@ dependencies {
     implementation("org.flywaydb:flyway-mysql:11.10.5")
 
     compileOnly("com.github.MilkBowl:VaultAPI:1.7.1")
+    compileOnly("su.nightexpress.coinsengine:CoinsEngine:2.6.0")
 }
 
 val targetJavaVersion = 21

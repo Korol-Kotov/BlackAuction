@@ -2,6 +2,7 @@ package me.korolkotov.blackauction.database.dao.jdbc
 
 import me.korolkotov.blackauction.auction.model.PlayerHistory
 import me.korolkotov.blackauction.database.dao.PlayerHistoryDao
+import me.korolkotov.blackauction.economy.EconomyType
 import me.korolkotov.blackauction.util.getInstant
 import me.korolkotov.blackauction.util.setInstant
 import java.sql.Statement
@@ -17,16 +18,18 @@ class JdbcPlayerHistoryDao(
         ds.connection.use { con ->
             val sql = """
                 INSERT INTO ba_player_history
-                (player_uuid, lot_id, item_name, final_price, won_at, claimed_at)
-                VALUES (?, ?, ?, ?, ?, ?)
+                (player_uuid, lot_id, item_name, economy, final_price, won_at, claimed_at)
+                VALUES (?, ?, ?, ?, ?, ?, ?)
             """
             con.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS).use { ps ->
-                ps.setString(1, entry.playerUniqueId.toString())
-                ps.setInt(2, entry.lotId)
-                ps.setString(3, entry.item.take(255))
-                ps.setDouble(4, entry.finalPrice)
-                ps.setInstant(5, entry.wonAt)
-                ps.setTimestamp(6, entry.claimedAt?.let { Timestamp.from(it) })
+                var index = 1
+                ps.setString(index++, entry.playerUniqueId.toString())
+                ps.setInt(index++, entry.lotId)
+                ps.setString(index++, entry.item.take(255))
+                ps.setString(index++, entry.economy.name)
+                ps.setDouble(index++, entry.finalPrice)
+                ps.setInstant(index++, entry.wonAt)
+                ps.setTimestamp(index, entry.claimedAt?.let { Timestamp.from(it) })
 
                 ps.executeUpdate()
                 ps.generatedKeys.use {
@@ -63,6 +66,7 @@ class JdbcPlayerHistoryDao(
                                     playerUuid,
                                     rs.getInt("lot_id"),
                                     rs.getString("item_name"),
+                                    EconomyType.entries.first { it.name.equals(rs.getString("economy"), true) },
                                     rs.getDouble("final_price"),
                                     rs.getInstant("won_at"),
                                     rs.getTimestamp("claimed_at")?.toInstant()

@@ -3,6 +3,7 @@ package me.korolkotov.blackauction.menu.impls
 import me.korolkotov.blackauction.auction.AuctionManager
 import me.korolkotov.blackauction.auction.model.LotHistory
 import me.korolkotov.blackauction.config.ConfigManager
+import me.korolkotov.blackauction.economy.EconomyManager
 import me.korolkotov.blackauction.load.LoadManager
 import me.korolkotov.blackauction.menu.Menu
 import me.korolkotov.blackauction.menu.button.MenuButton
@@ -102,7 +103,7 @@ class AdminHistoryMenu(
         val player = entry.winnerName ?: "Нет победителя"
         val replacements = mapOf(
             "%player%" to player,
-            "%final_price%" to (entry.finalPrice?.toString() ?: "Нет цены"),
+            "%final_price%" to (if (entry.finalPrice != null) EconomyManager.instance.format(entry.economy, entry.finalPrice) else "Нет цены"),
             "%commission%" to entry.commissionTaken.toString(),
             "%date%" to entry.completedAt.format(ConfigManager.instance.config.auction.general.dateFormat)
         )

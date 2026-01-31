@@ -15,6 +15,7 @@ import me.korolkotov.blackauction.coroutine.BukkitDispatcher
 import me.korolkotov.blackauction.coroutine.PluginCoroutineScope
 import me.korolkotov.blackauction.database.DatabaseManager
 import me.korolkotov.blackauction.database.repository.AuctionRepository
+import me.korolkotov.blackauction.economy.EconomyType
 import me.korolkotov.blackauction.load.LoadManager
 import me.korolkotov.blackauction.load.LoadManagerInterface
 import me.korolkotov.blackauction.logger.Logger
@@ -77,6 +78,7 @@ class AuctionManager : LoadManagerInterface<AuctionManager> {
             0,
             auctionCache.nextSlot(),
             ItemStack(Material.STONE),
+            EconomyType.VAULT,
             config.bidding.defaultStartPrice,
             config.bidding.defaultBidStep,
             start,

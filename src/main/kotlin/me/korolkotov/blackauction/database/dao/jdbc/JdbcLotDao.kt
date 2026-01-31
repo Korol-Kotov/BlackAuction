@@ -3,6 +3,7 @@ package me.korolkotov.blackauction.database.dao.jdbc
 import me.korolkotov.blackauction.auction.model.Lot
 import me.korolkotov.blackauction.auction.model.LotStatus
 import me.korolkotov.blackauction.database.dao.LotDao
+import me.korolkotov.blackauction.economy.EconomyType
 import me.korolkotov.blackauction.util.ItemSerializer
 import me.korolkotov.blackauction.util.getInstant
 import me.korolkotov.blackauction.util.setInstant
@@ -18,13 +19,14 @@ class JdbcLotDao(
         ds.connection.use { con ->
             val sql = """
                 INSERT INTO ba_lots
-                (slot, item_data, start_price, min_bid_step, start_time, end_time, status, created_by, created_at, current_price, current_winner_uuid)
-                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+                (slot, item_data, economy, start_price, min_bid_step, start_time, end_time, status, created_by, created_at, current_price, current_winner_uuid)
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
             """
             con.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS).use { ps ->
                 var index = 1
                 ps.setInt(index++, lot.slot)
                 ps.setString(index++, ItemSerializer.serialize(lot.item))
+                ps.setString(index++, lot.economy.name)
                 ps.setDouble(index++, lot.startPrice)
                 ps.setDouble(index++, lot.minStep)
                 ps.setInstant(index++, lot.startTime)
@@ -50,6 +52,7 @@ class JdbcLotDao(
             SET
                 slot = ?,
                 item_data = ?,
+                economy = ?,
                 start_price = ?,
                 min_bid_step = ?,
                 start_time = ?,
@@ -65,6 +68,7 @@ class JdbcLotDao(
                 var index = 1
                 ps.setInt(index++, lot.slot)
                 ps.setString(index++, ItemSerializer.serialize(lot.item))
+                ps.setString(index++, lot.economy.name)
                 ps.setDouble(index++, lot.startPrice)
                 ps.setDouble(index++, lot.minStep)
                 ps.setInstant(index++, lot.startTime)
@@ -92,6 +96,7 @@ class JdbcLotDao(
                         rs.getInt("id"),
                         rs.getInt("slot"),
                         ItemSerializer.deserialize(rs.getString("item_data")),
+                        EconomyType.entries.first { it.name.equals(rs.getString("economy"), true) },
                         rs.getDouble("start_price"),
                         rs.getDouble("min_bid_step"),
                         rs.getInstant("start_time"),

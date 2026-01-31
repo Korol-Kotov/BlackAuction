@@ -3,6 +3,8 @@ package me.korolkotov.blackauction.menu.impls
 import me.korolkotov.blackauction.auction.model.Lot
 import me.korolkotov.blackauction.auction.model.LotStatus
 import me.korolkotov.blackauction.config.ConfigManager
+import me.korolkotov.blackauction.economy.EconomyManager
+import me.korolkotov.blackauction.economy.EconomyType
 import me.korolkotov.blackauction.load.LoadManager
 import me.korolkotov.blackauction.menu.Menu
 import me.korolkotov.blackauction.menu.button.ItemButton
@@ -51,11 +53,55 @@ class AdminLotMenu(
             {}
         ))
 
+        val economyType = config.getItem("economy-type")
+        addButton(SimpleButton(
+            {
+                val lore = MessageService.format(economyType.getLore(),
+                    mapOf("%economy_type%" to lot.economy.name))
+                ItemBuilder(economyType.getItem()!!).lore(lore).build()
+            },
+            economyType.getSlots()
+        ) { data ->
+            if (lot.status != LotStatus.PLANNED) {
+                MessageService.sendMessage(data.player, ConfigManager.instance.messageConfig.errorsConfig.cantChangeLot)
+                return@SimpleButton
+            }
+
+            MessageService.sendMessage(data.player, ConfigManager.instance.messageConfig.scannerConfig.specifyEconomyType)
+            data.player.closeInventory()
+            scanner.waitFor(data.player, 20L * 30) { message ->
+                if (lot.status != LotStatus.PLANNED) {
+                    MessageService.sendMessage(data.player, ConfigManager.instance.messageConfig.errorsConfig.cantChangeLot)
+                    return@waitFor
+                }
+
+                val economyType = EconomyType.entries.firstOrNull { it.name.equals(message, true) }
+                if (economyType == null) {
+                    MessageService.sendMessage(data.player, ConfigManager.instance.messageConfig.errorsConfig.wrongEconomyType)
+                    return@waitFor
+                }
+
+                if (economyType == lot.economy) {
+                    MessageService.sendMessage(data.player, ConfigManager.instance.messageConfig.errorsConfig.alreadyEconomyType)
+                    return@waitFor
+                }
+
+                if (!EconomyManager.instance.isRegistered(economyType)) {
+                    MessageService.sendMessage(data.player, ConfigManager.instance.messageConfig.errorsConfig.economyTypeNotRegistered)
+                    return@waitFor
+                }
+
+                lot.economy = economyType
+                update()
+                this.open(data.player)
+            }
+        })
+
         val startPrice = config.getItem("start-price")
         addButton(SimpleButton(
             {
                 val lore = MessageService.format(startPrice.getLore(),
-                    mapOf("%start_price%" to lot.startPrice.toString()))
+                    mapOf("%start_price%" to EconomyManager.instance.format(lot.economy, lot.startPrice)))
                 ItemBuilder(startPrice.getItem()!!).lore(lore).build()
             },
             startPrice.getSlots()
@@ -89,7 +135,7 @@ class AdminLotMenu(
         addButton(SimpleButton(
             {
                 val lore = MessageService.format(minBetStep.getLore(),
-                    mapOf("%min_bet%" to lot.minStep.toString()))
+                    mapOf("%min_bet%" to EconomyManager.instance.format(lot.economy, lot.minStep)))
                 ItemBuilder(minBetStep.getItem()!!).lore(lore).build()
             },
             minBetStep.getSlots()

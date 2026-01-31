@@ -140,7 +140,7 @@ class ClaimsMenu(
         val builder = ItemBuilder(item)
         val replacements = mapOf(
             "%date%" to claim.wonAt.format(ConfigManager.instance.config.auction.general.dateFormat),
-            "%final_price%" to claim.pricePaid.toString()
+            "%final_price%" to claim.pricePaid.format()
         )
         val lore = MessageService.format(claimItem.getLore(), replacements)
         return builder.lore(lore).build()

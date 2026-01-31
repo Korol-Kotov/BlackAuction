@@ -38,12 +38,13 @@ class JdbcClaimDao(
                 """
             }
             con.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS).use { ps ->
-                ps.setString(1, claim.playerUniqueId.toString())
-                ps.setInt(2, claim.lotId)
-                ps.setString(3, ItemSerializer.serialize(claim.item))
-                ps.setDouble(4, claim.pricePaid)
-                ps.setInstant(5, claim.wonAt)
-                ps.setInstant(6, claim.addedAt)
+                var index = 1
+                ps.setString(index++, claim.playerUniqueId.toString())
+                ps.setInt(index++, claim.lotId)
+                ps.setString(index++, ItemSerializer.serialize(claim.item))
+                ps.setDouble(index++, claim.pricePaid)
+                ps.setInstant(index++, claim.wonAt)
+                ps.setInstant(index, claim.addedAt)
                 ps.executeUpdate()
 
                 ps.generatedKeys.use {

@@ -26,6 +26,9 @@ messages:
     wrong-date: 'Вы указали не дату или она уже прошла.'
     player-not-found: 'Не удалось найти игрока с данным ником.'
     lot-not-found: 'На данном слоте нет лота.'
+    wrong-economy-type: 'Вы указали неверный тип экономики.'
+    already-economy-type: 'У вас уже стоит данный тип экономики.'
+    economy-type-not-registered: 'Данный тип экономики не зарегистрирован в плагине.'
 
   success:
     bid-placed: 'Вы сделали ставку %amount%.'
@@ -36,6 +39,7 @@ messages:
     specify-number: 'Введите число в чат.'
     specify-date: 'Введите дату в чат. Пример: 20.01.2026 10:00'
     specify-player: 'Введите ник игрока в чат.'
+    specify-economy-type: 'Введите тип экономики. (VAULT, COINS_ENGINE)'
 
   warnings:
     not-enough-money: 'У вас недостаточно средст на балансе.'

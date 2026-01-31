@@ -4,6 +4,8 @@ import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer
 import net.kyori.adventure.text.serializer.plain.PlainTextComponentSerializer
 import org.bukkit.inventory.ItemStack
+import java.math.BigDecimal
+import java.math.RoundingMode
 import java.sql.PreparedStatement
 import java.sql.ResultSet
 import java.sql.Timestamp
@@ -36,4 +38,12 @@ fun Instant.diffFormat(other: Instant, pattern: String): String {
 
     val time = LocalTime.of(if (hours == 24) 0 else hours, minutes, seconds)
     return DateTimeFormatter.ofPattern(pattern).format(time)
+}
+
+fun Double.format(): String {
+    val bd = BigDecimal(this.toString())
+        .setScale(2, RoundingMode.HALF_UP)
+        .stripTrailingZeros()
+
+    return bd.toPlainString()
 }

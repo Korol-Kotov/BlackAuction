@@ -4,7 +4,7 @@ main: me.korolkotov.blackauction.Main
 api-version: '1.21'
 author: KoroLKotov
 
-softdepend: [Vault]
+softdepend: [Vault, CoinsEngine]
 
 commands:
   blackauction:

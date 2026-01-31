@@ -111,7 +111,7 @@ class AuctionScheduler(
             if (ConfigManager.instance.config.auction.economy.commissionDestination.equals("TREASURY", true)) {
                 val account = ConfigManager.instance.config.auction.economy.treasuryAccount
                 val player = Bukkit.getOfflinePlayer(account)
-                EconomyManager.instance.deposit(player, result.totalCommission)
+                EconomyManager.instance.deposit(lot.economy, player, result.totalCommission)
             }
 
             val claim = Claim(
@@ -132,6 +132,7 @@ class AuctionScheduler(
                 winner,
                 lot.id,
                 lot.item.getName(),
+                lot.economy,
                 finalPrice,
                 now,
                 null
@@ -143,7 +144,7 @@ class AuctionScheduler(
             }
             val player = Bukkit.getPlayer(winner)
             if (player != null) MessageService.sendMessage(player, ConfigManager.instance.messageConfig.notifications.youWon,
-                mapOf("%item%" to lot.item.getName(), "%price%" to finalPrice.toString()))
+                mapOf("%item%" to lot.item.getName(), "%price%" to EconomyManager.instance.format(lot.economy, finalPrice)))
         } else {
             val admin = lot.createdBy
             val claim = Claim(
@@ -169,6 +170,7 @@ class AuctionScheduler(
             lot.item.clone(),
             lot.leader,
             winnerName,
+            lot.economy,
             finalPrice,
             commissionTaken,
             lot.startTime,
@@ -189,7 +191,7 @@ class AuctionScheduler(
         closeInventories(lot)
         if (lot.leader != null) {
             val leader = Bukkit.getOfflinePlayer(lot.leader!!)
-            EconomyManager.instance.deposit(leader, lot.currentBid)
+            EconomyManager.instance.deposit(lot.economy, leader, lot.currentBid)
         }
         if (!lot.item.type.isEmpty) {
             val now = TimeUtil.now()

@@ -14,7 +14,7 @@ main-menu:
       slots: [10, 13, 16, 28, 31, 34]
       lore:
         - '─────────────'
-        - '💰 Текущая ставка: %current_bid% ₽'
+        - '💰 Текущая ставка: %current_bid%'
         - '👤 Лидер: %leader%'
         - '⏱️ До конца: %time%'
         - '─────────────'
@@ -95,7 +95,7 @@ claims-menu:
       lore:
         - '─────────────'
         - '📅 Дата: %date%'
-        - '💰 Цена: %final_price% ₽'
+        - '💰 Цена: %final_price%'
         - '📦 Статус: Ожидает получения'
         - '─────────────'
         - '▶ Нажмите, чтобы забрать'
@@ -130,7 +130,7 @@ my-history-menu:
       lore:
         - '─────────────'
         - '📅 %date%'
-        - '💰 Цена: %final_price% ₽'
+        - '💰 Цена: %final_price%'
         - '✅ Статус: %status%'
     previous-page:
       slots: [51]
@@ -158,7 +158,7 @@ admin-menu:
       slots: [ 10, 13, 16, 28, 31, 34 ]
       lore:
         - '─────────────'
-        - '💰 Начальная ставка: %start_price% ₽'
+        - '💰 Начальная ставка: %start_price%'
         - '👤 Создатель: %creator%'
         - '⏱️ Начало: %start_date%'
         - '⏱️ Конец: %end_date%'
@@ -196,26 +196,32 @@ admin-lot-menu:
         - "написать что-либо в чат."
     lot-item:
       slots: [13]
-    start-price:
+    economy-type:
       slots: [18]
+      material: "SUNFLOWER"
+      display-name: "Настроить тип экономики"
+      lore:
+        - 'Текущее значение: %economy_type%'
+    start-price:
+      slots: [19]
       material: "GOLD_INGOT"
       display-name: "Настроить стартовую цену"
       lore:
         - 'Текущее значение: %start_price%'
     min-bet-step:
-      slots: [19]
+      slots: [20]
       material: "GOLD_NUGGET"
       display-name: "Настроить минимальный шаг"
       lore:
         - 'Текущее значение: %min_bet%'
     start-time:
-      slots: [20]
+      slots: [21]
       material: "COMPASS"
       display-name: "Настроить время и дату начала"
       lore:
         - 'Текущее значение: %start_time%'
     end-time:
-      slots: [21]
+      slots: [22]
       material: "SAND"
       display-name: "Настроить время и дату конца"
       lore:
@@ -256,11 +262,9 @@ admin-history-menu:
       lore:
         - '─────────────'
         - '👤 Победитель: %player%'
-        - '💰 Цена: %final_price% ₽'
-        - '💸 Комиссия: %commission% ₽'
+        - '💰 Цена: %final_price%'
+        - '💸 Комиссия: %commission%'
         - '📅 %date%'
-        - '─────────────'
-        - '▶ Нажмите для деталей'
     filter-player:
       slots: [49]
       material: "PLAYER_HEAD"
