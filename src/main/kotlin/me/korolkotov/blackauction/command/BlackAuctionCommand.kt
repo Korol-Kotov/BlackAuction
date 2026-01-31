@@ -22,12 +22,6 @@ class BlackAuctionCommand : CommandExecutor() {
 
     @SubCommand(permissionNode = "use")
     fun use(player: Player) {
-        val active = auctionManager.auctionCache.getLots().filter { it.status == LotStatus.RUNNING }
-        if (active.isEmpty()) {
-            MessageService.sendMessage(player, ConfigManager.instance.messageConfig.warningsConfig.noActiveLots)
-            return
-        }
-
         val menu = MainMenu()
         menu.open(player)
     }

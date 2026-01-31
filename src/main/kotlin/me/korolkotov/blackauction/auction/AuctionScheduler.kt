@@ -12,6 +12,7 @@ import me.korolkotov.blackauction.menu.impls.AdminLotMenu
 import me.korolkotov.blackauction.menu.impls.LotMenu
 import me.korolkotov.blackauction.util.MessageService
 import me.korolkotov.blackauction.util.PlayerUtil
+import me.korolkotov.blackauction.util.TaskService
 import me.korolkotov.blackauction.util.TimeUtil
 import me.korolkotov.blackauction.util.getName
 import org.bukkit.Bukkit
@@ -216,11 +217,11 @@ class AuctionScheduler(
             when (openInv) {
                 is LotMenu -> {
                     if (openInv.lot.id == lot.id)
-                        player.closeInventory()
+                        TaskService.run { player.closeInventory() }
                 }
                 is AdminLotMenu -> {
                     if (openInv.lot.id == lot.id)
-                        player.closeInventory()
+                        TaskService.run { player.closeInventory() }
                 }
             }
         }

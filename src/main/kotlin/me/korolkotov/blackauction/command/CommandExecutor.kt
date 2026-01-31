@@ -94,8 +94,11 @@ abstract class CommandExecutor : TabExecutor {
                 params[params.size - 1] = varParams
             }
 
-            val needParams = requestedParams.filter { !it.isOptional && !it.type.isMarkedNullable }
-            if (needParams.size - 1 > params.size) {
+            val requiredArgsCount = requestedParams
+                .drop(1)
+                .count { !it.isOptional && !it.type.isMarkedNullable }
+
+            if (args.size < requiredArgsCount) {
                 return CommandResult.METHOD_ERROR
             }
 

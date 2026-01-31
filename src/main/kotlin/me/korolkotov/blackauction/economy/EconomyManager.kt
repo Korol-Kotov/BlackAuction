@@ -42,6 +42,7 @@ class EconomyManager : LoadManagerInterface<EconomyManager> {
         if (amount <= 0) return true
 
         val response = economy.withdrawPlayer(player, amount)
+        Logger.instance.debug("$amount was withdrawn from ${player.name}'s account (transaction success: ${response.transactionSuccess()})")
         return response.transactionSuccess()
     }
 
@@ -49,6 +50,7 @@ class EconomyManager : LoadManagerInterface<EconomyManager> {
         if (amount <= 0) return true
 
         val response = economy.depositPlayer(player, amount)
+        Logger.instance.debug("$amount was deposited to ${player.name}'s account (transaction success: ${response.transactionSuccess()})")
         return response.transactionSuccess()
     }
 

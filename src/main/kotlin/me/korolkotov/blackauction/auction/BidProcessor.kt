@@ -31,7 +31,7 @@ class BidProcessor(
         lot.leader = player.uniqueId
         lot.currentBid = amount
         EconomyManager.instance.withdraw(player, amount)
-        Logger.instance.debug("New bid to ${lot.id}: ${player.name} made a bid of $amount")
+        Logger.instance.debug("New bid to ${lot.id} (slot: ${lot.slot}): ${player.name} made a bid of $amount")
         MessageService.sendMessage(player, ConfigManager.instance.messageConfig.successConfig.bidPlaced,
             mapOf("%amount%" to amount.toString()))
         val now = TimeUtil.now()
