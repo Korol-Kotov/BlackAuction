@@ -2,8 +2,10 @@ package me.korolkotov.blackauction.auction
 
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import me.korolkotov.blackauction.auction.model.*
 import me.korolkotov.blackauction.config.ConfigManager
+import me.korolkotov.blackauction.coroutine.BukkitDispatcher
 import me.korolkotov.blackauction.coroutine.PluginCoroutineScope
 import me.korolkotov.blackauction.economy.CommissionCalculator
 import me.korolkotov.blackauction.economy.EconomyManager
@@ -214,16 +216,18 @@ class AuctionScheduler(
     }
 
     private fun closeInventories(lot: Lot) {
-        Bukkit.getOnlinePlayers().forEach { player ->
-            val openInv = player.openInventory.topInventory.holder ?: return@forEach
-            when (openInv) {
-                is LotMenu -> {
-                    if (openInv.lot.id == lot.id)
-                        TaskService.run { player.closeInventory() }
-                }
-                is AdminLotMenu -> {
-                    if (openInv.lot.id == lot.id)
-                        TaskService.run { player.closeInventory() }
+        TaskService.run {
+            Bukkit.getOnlinePlayers().forEach { player ->
+                val openInv = player.openInventory.topInventory.holder ?: return@forEach
+                when (openInv) {
+                    is LotMenu -> {
+                        if (openInv.lot.id == lot.id)
+                            player.closeInventory()
+                    }
+                    is AdminLotMenu -> {
+                        if (openInv.lot.id == lot.id)
+                            player.closeInventory()
+                    }
                 }
             }
         }

@@ -16,6 +16,7 @@ import me.korolkotov.blackauction.database.dao.jdbc.JdbcPlayerHistoryDao
 import me.korolkotov.blackauction.database.repository.AuctionRepository
 import me.korolkotov.blackauction.load.LoadManagerInterface
 import me.korolkotov.blackauction.logger.Logger
+import java.io.File
 
 class DatabaseManager : LoadManagerInterface<DatabaseManager> {
     lateinit var dataSource: HikariDataSource
@@ -58,8 +59,9 @@ class DatabaseManager : LoadManagerInterface<DatabaseManager> {
             }
         } else {
             val sqlite = ConfigManager.instance.databaseConfig.sqlite
+            val dbFile = File(ConfigManager.instance.dataFolder, sqlite.file)
             HikariConfig().apply {
-                jdbcUrl = "jdbc:sqlite:${sqlite.file}"
+                jdbcUrl = "jdbc:sqlite:${dbFile.absolutePath}"
 
                 maximumPoolSize = 1
                 minimumIdle = 1
