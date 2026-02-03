@@ -9,8 +9,6 @@ import net.milkbowl.vault.economy.Economy
 import org.bukkit.Bukkit
 import org.bukkit.OfflinePlayer
 import su.nightexpress.coinsengine.api.CoinsEngineAPI
-import java.math.BigDecimal
-import java.math.RoundingMode
 
 class EconomyManager : LoadManagerInterface<EconomyManager> {
     companion object {

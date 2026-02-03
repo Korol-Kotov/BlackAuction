@@ -3,7 +3,6 @@ package me.korolkotov.blackauction.command
 import me.korolkotov.blackauction.Main
 import me.korolkotov.blackauction.annotations.SubCommand
 import me.korolkotov.blackauction.auction.AuctionManager
-import me.korolkotov.blackauction.auction.model.LotStatus
 import me.korolkotov.blackauction.config.ConfigManager
 import me.korolkotov.blackauction.load.LoadManager
 import me.korolkotov.blackauction.menu.impls.*
