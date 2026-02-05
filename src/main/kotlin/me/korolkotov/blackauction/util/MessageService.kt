@@ -33,10 +33,12 @@ object MessageService {
     }
 
     fun sendMessage(sender: CommandSender, message: String, replacements: Map<String, String> = emptyMap()) {
+        if (message.isEmpty()) return
         sender.sendMessage(format(prefix + message, replacements))
     }
 
     fun sendMessage(sender: CommandSender, message: List<String>, replacements: Map<String, String> = emptyMap()) {
+        if (message.isEmpty() || message.all { it.isEmpty() }) return
         format(listOf(prefix) + message, replacements).forEach(sender::sendMessage)
     }
 

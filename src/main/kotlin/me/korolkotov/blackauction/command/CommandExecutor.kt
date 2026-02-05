@@ -289,8 +289,8 @@ abstract class CommandExecutor : TabExecutor {
                 }
                 completions.removeIfNotStartsWith(args[args.size - 1])
             }
-        }.onFailure {
-            TODO("logging")
+        }.onFailure { e ->
+            Logger.instance.error("Error has occurred when trying to tab complete (sender: ${sender.name}, cmd: ${args.getOrNull(0) ?: "use"})", e)
         }
 
         return completions

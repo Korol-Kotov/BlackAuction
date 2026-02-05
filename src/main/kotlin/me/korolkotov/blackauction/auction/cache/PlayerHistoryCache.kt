@@ -7,10 +7,10 @@ import java.util.*
 
 class PlayerHistoryCache : Cache<UUID, List<PlayerHistory>>() {
     fun addEntry(uniqueId: UUID, history: PlayerHistory) {
-        val list = get(uniqueId)?.toMutableList() ?: return
+        val list = get(uniqueId)?.toMutableList() ?: mutableListOf()
         if (list.any { it.id == history.id }) return
         list.add(history)
-        put(uniqueId, list)
+        put(uniqueId, list.toList())
     }
 
     fun setClaimed(uniqueId: UUID, claim: Claim) {
