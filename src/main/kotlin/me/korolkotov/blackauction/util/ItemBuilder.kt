@@ -1,6 +1,7 @@
 package me.korolkotov.blackauction.util
 
 import com.destroystokyo.paper.profile.ProfileProperty
+import net.kyori.adventure.text.format.TextDecoration
 import org.bukkit.Bukkit
 import org.bukkit.Color
 import org.bukkit.Material
@@ -30,12 +31,14 @@ class ItemBuilder(
 
     fun name(value: String?) = apply {
         if (value != null)
-            meta?.displayName(value.asComponent())
+            meta?.displayName(value.asComponent()
+                .decoration(TextDecoration.ITALIC, false))
     }
 
     fun lore(value: List<String>?) = apply {
         if (!value.isNullOrEmpty())
-            meta?.lore(value.map { it.asComponent() })
+            meta?.lore(value.map { it.asComponent()
+                .decoration(TextDecoration.ITALIC, false)})
     }
 
     fun customModelData(value: Int?) = apply {
